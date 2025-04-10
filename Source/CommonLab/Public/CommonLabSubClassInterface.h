@@ -21,7 +21,6 @@ class COMMONLAB_API ICommonLabSubClassInterface
 	GENERATED_BODY()
 	
 public:
-
 	// 최초 및, 레벨 전환 시 호출
 	// GameInstance :: AddLocalPlayer () => CommonLabSubsystem :: NotifyPlayerAdded () 호출
 	// LocalPlayer :: OnPlayerControllerSet (Delegate / PlayerController :: ReceivePlayer () )  호출
@@ -36,4 +35,10 @@ public:
 	// GameInstance :: RemoveLocalPlayer () => CommonLabSubsystem :: NotifyPlayerDestroyed () 호출
 	virtual void Destroyed() = 0;
 
+
+	// 보다 좋은 방법을 찾는 중
+	void SetLocalPlayer(ULocalPlayer* LPlayer) { LocalPlayer = LPlayer;	}
+	
+protected:
+	TWeakObjectPtr<ULocalPlayer> LocalPlayer;
 };

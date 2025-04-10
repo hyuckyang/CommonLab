@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonLabLocalPlayer.h"
+#include "CommonLabSubClassInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CommonLabSubsystem.generated.h"
 
@@ -66,10 +67,14 @@ protected:
 		
 		FLocalPlayerSubClass& LocalPlayerSubClass = CLabPlayerSubClasses[CLabLocalPlayer];
 		
-		SubClassInterface* NewSubClass = NewObject<SubClassInterface>(LocalPlayer);	
+		SubClassInterface* NewSubClass = NewObject<SubClassInterface>(LocalPlayer);
+		if (ICommonLabSubClassInterface* SCInterface = Cast<ICommonLabSubClassInterface>(NewSubClass))
+		{
+			SCInterface->SetLocalPlayer(LocalPlayer);
+		}
+
 		LocalPlayerSubClass.CLabSubClasses.Add(NewSubClass);
 
-		
 		return NewSubClass;
 	}
 
