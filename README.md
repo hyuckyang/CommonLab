@@ -17,11 +17,11 @@ CommonLabPlayerController </br>
 </br>
 
 CommonLabLocalPlayer </br>
-+ 프로젝트 셋팅 -> 일반 셋팅 -> 로컬 플레이어 클래스 에 설정합니다. CommonLabLocalPlayer 는 CommonLab 이 밀착한 클래스로 반드시 사용 혹은 (사용중인) LocalPlayer 에 상속받는 식으로 사용해야 합니다.
++ 프로젝트 셋팅 -> 일반 셋팅 -> 로컬 플레이어 클래스 에 설정합니다. CommonLabLocalPlayer 는 반드시 필요하여, (사용중인) LocalPlayer 에 상속받은 형식으로라도 사용되어야 합니다.
  </br>
 
 CommonGameViewportClient </br>
-+ 프로젝트 셋팅 -> 일반 셋팅 -> 게임 뷰포트 클라이언트 클래스 에 설정합니다. CommonLab 은 CommonUI 기반이기에 CommonGameViewportClient 셋팅은 반드시 필요 합니다.
++ 프로젝트 셋팅 -> 일반 셋팅 -> 게임 뷰포트 클라이언트 클래스 에 설정합니다. CommonLab 은 CommonUI 기반이기에 CommonGameViewportClient 셋팅은 반드시 필요하며 (사용중인) GameViewportClient 에 상속받은 형식으로라도 사용되어야 합니다.
 </br>
 
 
