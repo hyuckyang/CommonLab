@@ -27,7 +27,9 @@ CommonGameViewportClient </br>
 
 CommonLabDelegate </br>
 > 개요</br>
->> C++ 전용으로 가변인자
+>> C++ 전용으로 가변인자 Delegate 를 RunTime 에서 생성 및 활용하여 통신하는 클래스 (자세한 설명 및, 활용법 작성)
+
+
 
 
 

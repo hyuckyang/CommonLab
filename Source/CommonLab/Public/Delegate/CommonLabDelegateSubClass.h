@@ -67,7 +67,7 @@ public:
 
 		Delegate->SetAllocateObject(Object);
 
-		return Delegate;
+		return Delegate.Get();
 	}
 
 	void Deallocate(UObject* Object);
