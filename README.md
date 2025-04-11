@@ -6,7 +6,8 @@ CommonLab 은 CommonGame 와 같이 LocalPlayer 이 생성, 변경, 삭제를 �
 CommonLab 은 언급된 생명주기를 기본으로 ICommonLabSubClassInterface 를 상속받은 객체들을 생성, 각 객체들이 특정 기능을 하겠금 유도하였습니다. </br>
 </br>
 </br>
-각 요소 의 설정법 </br>
+[각 요소 의 설정법]
+</br>
 </br>
 CommonLabGameInstance  </br>
 > 위의 Instance 를 사용하지 못한다면 (원하는) GameInstance 클래스 중 CommonLabGameInstance 와 동일하게 구성합니다. (함수) </br>
@@ -25,9 +26,19 @@ CommonGameViewportClient </br>
 </br>
 </br>
 
+[제작된 객체]
+</br>
+</br>
 CommonLabDelegate </br>
 > 개요</br>
->> C++ 전용으로 가변인자 Delegate 를 RunTime 에서 생성 및 활용하여 통신하는 클래스 (자세한 설명 및, 활용법 작성)
+>> C++ 전용으로 가변인자 Delegate 를 RunTime 에서 생성 및 활용하여 통신하는 클래스 (자세한 설명 및, 활용법 작성 중)
+</br>
+
+CommonLabInputActionDecorator
+> 개요</br>
+>> CommonUI 의 CommonInputActionDataTable 를 기반으로 플랫폼 아이콘이 출력을 지원하는 RichText Decorator  (자세한 설명 및, 활용법 작성 중)
+</br>
+
 
 
 
