@@ -8,7 +8,7 @@ void ACommonLabPlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
 
-	//
+	// 다시 플레이어 에 컨트롤러에 부여
 	if (UCommonLabLocalPlayer* LocalPlayer = Cast<UCommonLabLocalPlayer>(Player))
 	{
 		LocalPlayer->OnPlayerControllerSet.Broadcast(LocalPlayer, this);
