@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CommonLabDelegate.h"
 #include "CommonLabSubClassInterface.h"
+#include "CommonLabSubsystem.h"
 #include "UObject/Object.h"
 #include "CommonLabDelegateSubClass.generated.h"
 
@@ -22,6 +23,24 @@ class COMMONLAB_API UCommonLabDelegateSubClass : public UObject, public ICommonL
 
 public:
 
+	template <typename... Params>
+	static FCommonLabDelegate<Params...>* CLabAllocate(ULocalPlayer* LocalPlayer, UObject* Object, const FString& DelegateName)
+	{
+		if (UCommonLabDelegateSubClass* DelegateSubClass = LocalPlayer->GetGameInstance()->GetSubsystem<UCommonLabSubsystem>()->GetSubClass<UCommonLabDelegateSubClass>(LocalPlayer))
+		{
+			return DelegateSubClass->Allocate<Params... >(Object, DelegateName);
+		}
+		return nullptr;
+	}
+
+	static void CLabDeallocate(ULocalPlayer* LocalPlayer, UObject* Object)
+	{
+		if (UCommonLabDelegateSubClass* DelegateSubClass =  LocalPlayer->GetGameInstance()->GetSubsystem<UCommonLabSubsystem>()->GetSubClass<UCommonLabDelegateSubClass>(LocalPlayer))
+		{
+			DelegateSubClass->Deallocate(Object);
+		}
+	}
+	
 	// ~Begin ICommonLabSubClassInterface
 	virtual void Initialize() override;
 	virtual void Released() override;
@@ -86,7 +105,4 @@ private:
 	}
 	
 	TMap<FString, TSharedPtr<FCommonLabDelegateBase>> DelegateBasedMap;
-
-	
-	
 };

@@ -9,20 +9,25 @@ CommonLab 은 언급된 생명주기를 기본으로 ICommonLabSubClassInterface
 각 요소 의 설정법 </br>
 </br>
 CommonLabGameInstance  </br>
-+ 위의 Instance 를 사용하지 못한다면 (원하는) GameInstance 클래스 중 CommonLabGameInstance 와 동일하게 구성합니다. (함수) </br>
+> 위의 Instance 를 사용하지 못한다면 (원하는) GameInstance 클래스 중 CommonLabGameInstance 와 동일하게 구성합니다. (함수) </br>
 </br>
 
 CommonLabPlayerController </br>
-+ 위의 Controller 를 사용하지 못한다면 (원하는) PlayerController 에 CommonLabPlayerController 와 동일하게 구성합니다. (함수) </br>
+> 위의 Controller 를 사용하지 못한다면 (원하는) PlayerController 에 CommonLabPlayerController 와 동일하게 구성합니다. (함수) </br>
 </br>
 
 CommonLabLocalPlayer </br>
-+ 프로젝트 셋팅 -> 일반 셋팅 -> 로컬 플레이어 클래스 에 설정합니다. CommonLabLocalPlayer 는 반드시 필요하여, (사용중인) LocalPlayer 에 상속받은 형식으로라도 사용되어야 합니다.
+> 프로젝트 셋팅 -> 일반 셋팅 -> 로컬 플레이어 클래스 에 설정합니다. CommonLabLocalPlayer 는 반드시 필요하여, (사용중인) LocalPlayer 에 상속받은 형식으로라도 사용되어야 합니다.
  </br>
 
 CommonGameViewportClient </br>
-+ 프로젝트 셋팅 -> 일반 셋팅 -> 게임 뷰포트 클라이언트 클래스 에 설정합니다. CommonLab 은 CommonUI 기반이기에 CommonGameViewportClient 셋팅은 반드시 필요하며 (사용중인) GameViewportClient 에 상속받은 형식으로라도 사용되어야 합니다.
+> 프로젝트 셋팅 -> 일반 셋팅 -> 게임 뷰포트 클라이언트 클래스 에 설정합니다. CommonLab 은 CommonUI 기반이기에 CommonGameViewportClient 셋팅은 반드시 필요하며 (사용중인) GameViewportClient 에 상속받은 형식으로라도 사용되어야 합니다.
 </br>
+</br>
+
+CommonLabDelegate </br>
+> 개요</br>
+>> C++ 전용으로 가변인자
 
 
 
