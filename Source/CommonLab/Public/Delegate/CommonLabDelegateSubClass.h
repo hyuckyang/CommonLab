@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonLabDelegate.h"
-#include "CommonLabSubClassInterface.h"
-#include "CommonLabSubsystem.h"
 #include "UObject/Object.h"
+#include "CommonLabDelegate.h"
+#include "CommonLabSubsystem.h"
+#include "CommonLabSubClassInterface.h"
 #include "CommonLabDelegateSubClass.generated.h"
 
 // Template Parameter Pack String Macro

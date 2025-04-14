@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "UObject/Object.h"
 
 class COMMONLAB_API FCommonLabDelegateBase
 {
@@ -16,7 +16,6 @@ public:
 	// FCommonLabDelegateBase 를 호출하여 사용될 수 있어 이곳에 virtual 로 선언합니다.
 	virtual void RemoveFunction(UObject* Object) = 0;
 	
-
 	// Object 대입 
 	void SetAllocateObject(UObject* Object, bool bAllocate = true);
 	int32 GetAllocateObjectsCount() const { return AllocateObjects.Num(); }
@@ -32,7 +31,7 @@ private:
 };
 
 template <typename... Params>
-class COMMONLAB_API FCommonLabDelegate : public FCommonLabDelegateBase
+class FCommonLabDelegate : public FCommonLabDelegateBase
 {
 
 public:
