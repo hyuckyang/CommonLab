@@ -26,14 +26,26 @@ CommonGameViewportClient </br>
 </br>
 </br>
 
-[제작된 객체]
+
+</br>
+</br>
+
+[CommonLab Subsystem 를 통해 관리되는 객체(클래스)]
 </br>
 </br>
 CommonLabDelegate </br>
 > 개요</br>
 >> C++ 전용으로 가변인자 Delegate 를 RunTime 에서 생성 및 활용하여 통신하는 클래스 (자세한 설명 및, 활용법 작성 중)
 </br>
+</br>
 
+
+</br>
+</br>
+
+[Extention]
+</br>
+</br>
 CommonLabInputActionDecorator
 > 개요</br>
 >> CommonUI 의 CommonInputActionDataTable 를 기반으로 플랫폼 아이콘이 출력을 지원하는 RichText Decorator  (자세한 설명 및, 활용법 작성 중)
