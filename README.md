@@ -53,7 +53,7 @@ CommonLabInputActionDecorator
 >>> img id="id" 규격으로 CommonInputActionData 를 기반으로 Rich Text 에 키 아이콘을 출력이 가능합니다.</br>
 >> </br>
 >> <img src="https://github.com/user-attachments/assets/e2400d44-cfb3-41d6-bff6-c95578503595" witdh="55%"/></br>
->>> 런타임(게임 플레이) 도중, 입력 값(키보드/게임패드등)을 감지, 실시간으로 키 아이콘이 변경 됩니다.
+>>> 런타임(게임 플레이) 도중, 입력 값(키보드/게임패드등)을 감지, 실시간으로 키 아이콘이 변경 됩니다.</br>
 </br>
 
 
