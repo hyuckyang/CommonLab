@@ -51,7 +51,7 @@ CommonLabInputActionDecorator
 >> CommonUI 의 CommonInputActionDataTable 를 기반으로 플랫폼 아이콘이 출력을 지원하는 RichText Decorator </br>
 >> <img src="https://github.com/user-attachments/assets/c36f0ac7-4c83-469d-ab5a-3f2924a15a2a" witdh="55%"/></br>
 >>> img id="id" 규격으로 CommonInputActionData 를 기반으로 Rich Text 에 키 아이콘을 출력이 가능합니다.</br>
-></br>
+>> </br>
 >> <img src="https://github.com/user-attachments/assets/e2400d44-cfb3-41d6-bff6-c95578503595" witdh="55%"/></br>
 >>> 런타임(게임 플레이) 도중, 입력 값(키보드/게임패드등)을 감지, 실시간으로 키 아이콘이 변경 됩니다.
 </br>
