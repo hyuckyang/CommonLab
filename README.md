@@ -43,12 +43,13 @@ CommonLabDelegate </br>
 </br>
 </br>
 
-[Extention]
+[Extention -> CommonLab Subsystem 이 관리하지 않는 객체(클래스)]
 </br>
 </br>
 CommonLabInputActionDecorator
 > 개요</br>
->> CommonUI 의 CommonInputActionDataTable 를 기반으로 플랫폼 아이콘이 출력을 지원하는 RichText Decorator  (자세한 설명 및, 활용법 작성 중)
+>> CommonUI 의 CommonInputActionDataTable 를 기반으로 플랫폼 아이콘이 출력을 지원하는 RichText Decorator  (자세한 설명 및, 활용법 작성 중) </br>
+>> ![](img src="https://github.com/user-attachments/assets/d6096971-a735-4413-8f71-fed61067bb05")
 </br>
 
 
