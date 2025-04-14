@@ -25,13 +25,15 @@ public:
 	/**
 	 *  로컬 플레이에게 플레이어 상태가 할당횔 때 호출 됩니다.
 	 *  서버에서 플에이어 스테이트를 복제 될때 호출 됩니다.
+	 *  UCommonLabSubClassInterface 의 생명주기에 당장 영향을 주지는 않습니다.
 	 */
     DECLARE_MULTICAST_DELEGATE_TwoParams(FPlayerStateSetDelegate, UCommonLabLocalPlayer* LocalPlayer, APlayerState* PlayerState);
     FPlayerStateSetDelegate OnPlayerStateSet;
     
 	/**
 	 *  로컬 플에이어에게 플레이어 폰이 할당될 때 호출됩니다.
-	 *  새로운 캐릭터로 변경 되거나 혹은, 특정 폰으로 빙의 되는 등 
+	 *  새로운 캐릭터로 변경 되거나 혹은, 특정 폰으로 빙의 되는 등
+	 *  UCommonLabSubClassInterface 의 생명주기에 당장 영향을 주지 않습니다.
 	 */
     DECLARE_MULTICAST_DELEGATE_TwoParams(FPlayerPawnSetDelegate, UCommonLabLocalPlayer* LocalPlayer, APawn* Pawn);
     FPlayerPawnSetDelegate OnPlayerPawnSet;
