@@ -8,6 +8,7 @@
 
 class UDataTable;
 class UCommonInputSubsystem;
+enum class ECommonInputType : uint8;
 /**
  * 
  */
@@ -45,5 +46,9 @@ protected:
 	TMap<int32, FVector2D> CommonActionIconLocationByFontSize;
 
 private:
+	// 입력 방식이 변경되면 호출되는 함수
+	UFUNCTION()
+	void OnInputMethodChanged(ECommonInputType InputType);
+
 	TWeakObjectPtr<URichTextBlock> OwnerRichTextBlock;
 };

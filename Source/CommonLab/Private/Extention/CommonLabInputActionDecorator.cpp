@@ -11,8 +11,6 @@
 #include "CommonInputSubsystem.h"
 #include "Components/RichTextBlock.h"
 
-
-
 #pragma region Slate
 class SCommonInputActionIconInlineImage : public SCompoundWidget
 {
@@ -21,6 +19,7 @@ protected:
 	TOptional<int32> Width;
 	TOptional<int32> Height;
 	FVector2D RendLocation;
+	
 
 public:
 	SLATE_BEGIN_ARGS(SCommonInputActionIconInlineImage)
@@ -64,7 +63,8 @@ public:
 				SNew(SScaleBox)
 				.Stretch(EStretch::ScaleToFit)
 				.StretchDirection(EStretchDirection::DownOnly)
-				.VAlign(VAlign_Center)
+				.VAlign(VAlign_Fill)
+				.HAlign(HAlign_Fill)
 				[
 					SNew(SImage)
 					.Image(Brush)
@@ -154,13 +154,23 @@ void UCommonLabInputActionDecorator::BeginDestroy()
 TSharedPtr<ITextDecorator> UCommonLabInputActionDecorator::CreateDecorator(URichTextBlock* InOwner)
 {
 	OwnerRichTextBlock = InOwner;
+	if (OwnerRichTextBlock.IsValid())
+	{
+		if (UCommonInputSubsystem* CommonInput = GetInputSubsystem())
+		{
+			CommonInput->OnInputMethodChangedNative.AddUObject(this, &UCommonLabInputActionDecorator::OnInputMethodChanged);
+		}
+	}
+
+
+	
 	return MakeShareable(new FCommonInputActionIconInlineImage(InOwner, this));
 }
 
 const FSlateBrush* UCommonLabInputActionDecorator::FindImageBrush(FName TagOrId, bool bWarnIfMissing)
 {
 	// 예외처리 중,
-	if (OwnerRichTextBlock == nullptr || OwnerRichTextBlock->GetOwningLocalPlayer() != nullptr )
+	if (OwnerRichTextBlock == nullptr || OwnerRichTextBlock->GetOwningLocalPlayer() == nullptr )
 		return &SlateBrush;
 
 	if (Icons.Contains(TagOrId))
@@ -176,10 +186,15 @@ const FSlateBrush* UCommonLabInputActionDecorator::FindImageBrush(FName TagOrId,
 	TArray<FDataTableRowHandle> Handle;
 	Handle.Add(RowData);
 
-	const FSlateBrush GetIcon = CommonUI::GetIconForInputActions(GetInputSubsystem(), Handle);
-	Icons.Add(TagOrId, GetIcon);
+	if (UCommonInputSubsystem* CommonInput = GetInputSubsystem())
+	{
+		const FSlateBrush GetIcon = CommonUI::GetIconForInputActions(CommonInput, Handle);
+		Icons.Add(TagOrId, GetIcon);
 
-	return &Icons[TagOrId];
+		return &Icons[TagOrId];
+	}
+
+	return &SlateBrush;
 }
 
 UCommonInputSubsystem* UCommonLabInputActionDecorator::GetInputSubsystem() const
@@ -198,4 +213,14 @@ FVector2D UCommonLabInputActionDecorator::GetIconLocation(int32 FontSize)
 		return CommonActionIconLocationByFontSize[FontSize];
 	
 	return CommonActionIconLocation;
+}
+
+void UCommonLabInputActionDecorator::OnInputMethodChanged(ECommonInputType InputType)
+{
+	// 이미지 맵 비우고
+	Icons.Empty();
+
+	// RichTextBlock에 있는 모든 텍스트를 다시 그립니다.
+	if (OwnerRichTextBlock.IsValid())
+		OwnerRichTextBlock->RefreshTextLayout();
 }
