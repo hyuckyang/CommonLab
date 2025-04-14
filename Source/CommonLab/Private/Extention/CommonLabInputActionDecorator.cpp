@@ -146,7 +146,14 @@ UCommonLabInputActionDecorator::UCommonLabInputActionDecorator(const FObjectInit
 
 void UCommonLabInputActionDecorator::BeginDestroy()
 {
+	if (UCommonInputSubsystem* CommonInput = GetInputSubsystem())
+	{
+		CommonInput->OnInputMethodChangedNative.AddUObject(this, &UCommonLabInputActionDecorator::OnInputMethodChanged);
+	}
+	
 	Icons.Empty();
+	OwnerRichTextBlock.Reset();
+	
 	Super::BeginDestroy();
 }
 
@@ -154,15 +161,10 @@ void UCommonLabInputActionDecorator::BeginDestroy()
 TSharedPtr<ITextDecorator> UCommonLabInputActionDecorator::CreateDecorator(URichTextBlock* InOwner)
 {
 	OwnerRichTextBlock = InOwner;
-	if (OwnerRichTextBlock.IsValid())
+	if (UCommonInputSubsystem* CommonInput = GetInputSubsystem())
 	{
-		if (UCommonInputSubsystem* CommonInput = GetInputSubsystem())
-		{
-			CommonInput->OnInputMethodChangedNative.AddUObject(this, &UCommonLabInputActionDecorator::OnInputMethodChanged);
-		}
+		CommonInput->OnInputMethodChangedNative.AddUObject(this, &UCommonLabInputActionDecorator::OnInputMethodChanged);
 	}
-
-
 	
 	return MakeShareable(new FCommonInputActionIconInlineImage(InOwner, this));
 }
