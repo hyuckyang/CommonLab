@@ -33,6 +33,15 @@ CommonGameViewportClient </br>
 [CommonLab Subsystem 를 통해 관리되는 객체(클래스)]
 </br>
 </br>
+CommonLabActivatable </br>
+> 개요 </br>
+>> CommonUI 의 CommonActivatableWidget 을 기반으로 하는 UI 시스템 </br>
+>> Lyra 샘플 에서 적용한 것과 다르게 GAS 시스템 기반이 아닌 ICommonLabSubClassInterface 기반 으로 GAS 셋팅 없이 바로 사용 가능
+>> 현재 작업 진행 중, 진행 후 자세한 설명 및 활용법 작성 예정
+
+</br>
+</br>
+
 CommonLabDelegate </br>
 > 개요</br>
 >> C++ 전용으로 가변인자 Delegate 를 RunTime 에서 생성 및 활용하여 통신하는 클래스 (자세한 설명 및, 활용법 작성 중)
