@@ -2,3 +2,12 @@
 
 
 #include "Activatable/CommonLabActivatableStackable.h"
+
+void UCommonLabActivatableStackable::SetPrevStackable(UCommonLabActivatableStackable* Stackable)
+{
+	if (Stackable)
+	{
+		PrevStackable = Stackable;
+	}
+}
+

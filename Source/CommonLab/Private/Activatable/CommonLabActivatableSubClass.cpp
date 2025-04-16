@@ -70,11 +70,29 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 			}
 		});
 
-		for (auto Tag : Setting->ActivatableStackTags)
+		for (int32 i = 0; i < Setting->ActivatableStackTags.Num(); i++)
 		{
-			AddStackable(Tag);
+			FGameplayTag CurrTag = Setting->ActivatableStackTags[i];
+			FGameplayTag PrevTag = FGameplayTag::EmptyTag;
+			if (i > 0)
+			{
+				PrevTag = Setting->ActivatableStackTags[i - 1];
+			}
+			
+			UCommonLabActivatableStackable* PrevStackable = nullptr;
+			if (PrevTag != FGameplayTag::EmptyTag)
+			{
+				if (TWeakObjectPtr<UCommonLabActivatableStackable> Stackable = ActivatableStacks.FindRef(PrevTag); Stackable.IsValid())
+				{
+					PrevStackable = Stackable.Get();
+				}
+			}
+
+			if (UCommonLabActivatableStackable* CurrStackable = AddStackable(CurrTag))
+			{
+				CurrStackable->SetPrevStackable(PrevStackable);
+			}
 		}
-		
 	}
 }
 
@@ -95,13 +113,12 @@ void UCommonLabActivatableSubClass::RemoveRootFromViewport()
 void UCommonLabActivatableSubClass::DestroyRootFromViewport()
 {
 	RemoveRootFromViewport();
-
 	
 	RootOverlay.Reset();
 	Root.Reset();
 }
 
-void UCommonLabActivatableSubClass::AddStackable(FGameplayTag Tag)
+UCommonLabActivatableStackable* UCommonLabActivatableSubClass::AddStackable(FGameplayTag Tag)
 {
 	UCommonLabActivatableStackable* LayerStack = NewObject<UCommonLabActivatableStackable>(Root->WidgetTree, Tag.GetTagName());
 	LayerStack->SetVisibility(ESlateVisibility::Collapsed);
@@ -115,7 +132,9 @@ void UCommonLabActivatableSubClass::AddStackable(FGameplayTag Tag)
 	// LayerStack->OnTransitioningChanged.AddUObject(this, &UPrimaryGameLayout::OnWidgetStackTransitioning);
 	LayerStack->SetTransitionDuration(0.0);
 
-	ActivatableStacks.Emplace(Tag, LayerStack);	
+	ActivatableStacks.Emplace(Tag, LayerStack);
+
+	return ActivatableStacks[Tag].Get();
 }
 
 void UCommonLabActivatableSubClass::AddActivatableClass()
