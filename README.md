@@ -36,8 +36,8 @@ CommonGameViewportClient </br>
 CommonLabActivatable </br>
 > 개요 </br>
 >> CommonUI 의 CommonActivatableWidget 을 기반으로 하는 UI 시스템 </br>
->> Lyra 샘플 에서 적용한 것과 다르게 GAS 시스템 기반이 아닌 ICommonLabSubClassInterface 기반 으로 GAS 셋팅 없이 바로 사용 가능
->> 현재 작업 진행 중, 진행 후 자세한 설명 및 활용법 작성 예정
+>> Lyra 샘플 에서 적용한 것과 다르게 GAS 시스템 기반이 아닌 ICommonLabSubClassInterface 기반 으로 GAS 셋팅 없이 바로 사용 가능 </br>
+>> 현재 작업 진행 중, 진행 후 자세한 설명 및 활용법 작성 예정 </br>
 
 </br>
 </br>
