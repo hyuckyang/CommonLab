@@ -2,21 +2,34 @@
 
 
 #include "Activatable/CommonLabActivatableWidget.h"
-
 #include "Activatable/CommonLabActivatableStackable.h"
+#include "CommonUILibrary.h"
 
 
 void UCommonLabActivatableWidget::NativeOnActivated()
 {
-	Super::NativeOnActivated();	
+	Super::NativeOnActivated();
+	/*
+	 * 이전에 활성화된 위젯이 있다면, 해당 위젯에 OnOverlap 을 호출합니다.
+	 * 즉, 현재 위젯의 Stackable 의 이전 Stackable 의 마지막 위젯을 가져와서 OnOverlap 을 호출 합니다.))
+	 */
+
+	if (ActivatableStackable.IsValid())
+	{
+		if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
+		{
+			Prev->NativeOnOverlap(this, true);
+		}	
+	}
 }
 
 void UCommonLabActivatableWidget::NativeOnDeactivated()
 {
-	if (UCommonLabActivatableWidget* Prev = nullptr)
-	{
-		Prev->NativeOnOverlap(this, false);
-	}
+	// 
+	// if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
+	// {
+	// 	Prev->NativeOnOverlap(this, false);
+	// }
 
 	Super::NativeOnDeactivated();
 }

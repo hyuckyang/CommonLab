@@ -1,10 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CommonLabSubsystem.h"
-
 #include "CommonLabSubClassInterface.h"
 #include "Delegate/CommonLabDelegateSubClass.h"
+#include "Activatable/CommonLabActivatableSubClass.h"
 
 void UCommonLabSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -129,6 +128,7 @@ void UCommonLabSubsystem::NotifyPlayerDestroyed(ULocalPlayer* LocalPlayer)
 void UCommonLabSubsystem::CreateSubClass(ULocalPlayer* LocalPlayer)
 {
 	CreateSubClass<UCommonLabDelegateSubClass>(LocalPlayer);
+	CreateSubClass<UCommonLabActivatableSubClass>(LocalPlayer);
 }
 
 void UCommonLabSubsystem::ForeachSubClass(ULocalPlayer* LocalPlayer, TFunction<void(ICommonLabSubClassInterface*)> Func)

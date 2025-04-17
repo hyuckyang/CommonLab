@@ -81,7 +81,12 @@ public:
 
 		if (TWeakObjectPtr<UCommonLabActivatableStackable> Stackable = ActivatableStacks.FindRef(Tag); Stackable.IsValid())
 		{
-			return Stackable->AddWidgetToStackable<Activatable>(ActivatableClass, Function);
+			Activatable* ActivatableCreate = Stackable->AddWidget<Activatable>(ActivatableClass, Function);
+			if (UCommonLabActivatableWidget* LabActivatable = Cast<UCommonLabActivatableWidget>(ActivatableCreate))
+			{
+				LabActivatable->SetActivatedStackable(Stackable.Get());
+			}
+			return ActivatableCreate;
 		}
 		
 		return nullptr;

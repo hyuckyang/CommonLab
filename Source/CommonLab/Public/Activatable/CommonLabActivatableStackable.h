@@ -20,16 +20,10 @@ class COMMONLAB_API UCommonLabActivatableStackable : public UCommonActivatableWi
 
 public:
 
-	template<typename Activatable = UCommonLabActivatableWidget>
-	Activatable* AddWidgetToStackable(TSubclassOf<UCommonLabActivatableWidget> ActivatableClass, TFunctionRef<void(Activatable&)> InitFunc)
-	{
-		return AddWidget<Activatable>(ActivatableClass, InitFunc);
-	}
-
-	
-	
 	void SetPrevStackable(UCommonLabActivatableStackable* Stackable);
-	
+	UCommonLabActivatableStackable* GetPrevStackable() const { return PrevStackable.IsValid() ? PrevStackable.Get() : nullptr; }
+	UCommonLabActivatableWidget* GetPrevActivatableWidgetInStack(UCommonLabActivatableWidget* CurrentWidget);
+
 protected:
 
 	TWeakObjectPtr<UCommonLabActivatableStackable> PrevStackable;

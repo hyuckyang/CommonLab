@@ -37,6 +37,8 @@ public:
 	
 	// ~Begin Overlap , 다른 창이 본인 창으로 올라올 때, 혹은 사라질 때 호출 됩니다.
 	void NativeOnOverlap(UCommonLabActivatableWidget* OtherWidget, bool bIsOverlapping);
+
+	
 	// ~End Overlap
 	
 	// ~Begin UCommonActivatableWidget interface

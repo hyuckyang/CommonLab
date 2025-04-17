@@ -3,9 +3,12 @@
 
 #include "Activatable/CommonLabActivatableSubClass.h"
 #include "Activatable/CommonLabActivatableSettings.h"
-#include "Components/Overlay.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+
 
 void UCommonLabActivatableSubClass::Initialize()
 {
@@ -39,11 +42,12 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 	{
 		// Root 생성
 		const UCommonLabActivatableSettings* Setting = GetDefault<UCommonLabActivatableSettings>();
-		if (!Setting->RootLayoutClass.IsValid())
-			return;
+		// if (!Setting->RootLayoutClass.IsValid())
+		// 	return;
 
 		TSubclassOf<UUserWidget> RootClass = Setting->RootLayoutClass.TryLoadClass<UUserWidget>();
 		Root = CreateWidget<UUserWidget>(PC, RootClass);
+		//Root = CreateWidget<UCommonUserWidget>(PC, UCommonUserWidget::StaticClass());
 		Root->SetPlayerContext(FLocalPlayerContext(Cast<ULocalPlayer>(LocalPlayer.Get())));
 		Root->AddToPlayerScreen(1000); // 기본 레이어
 
@@ -57,6 +61,11 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 		}
 #endif
 
+		
+		// Root 아래에 UOverlay 를 생성합니다.
+		// RootOverlay = NewObject<UOverlay>(Root.Get(), TEXT("Main_Overlay"));
+		// Root->WidgetTree->SetContentForSlot(FName(TEXT("Main_Overlay")), Cast<UWidget>(RootOverlay));
+
 		// 최초 검색되는 UOverlay 가 Root 아래에 존재하는 Overlay 입니다. 
 		const UWidgetTree* Tree = Root.Get()->WidgetTree;
 		Tree->ForEachWidget([this](UWidget* Widget)
@@ -69,7 +78,7 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 				RootOverlay = Overlay;
 			}
 		});
-
+		
 		for (int32 i = 0; i < Setting->ActivatableStackTags.Num(); i++)
 		{
 			FGameplayTag CurrTag = Setting->ActivatableStackTags[i];
@@ -98,7 +107,7 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 
 void UCommonLabActivatableSubClass::RemoveRootFromViewport()
 {
-	if (Root.IsValid())
+	if (!Root.IsValid())
 		return;
 
 	// 캐싱된 위젯을 가져 옵니다.
@@ -121,7 +130,7 @@ void UCommonLabActivatableSubClass::DestroyRootFromViewport()
 UCommonLabActivatableStackable* UCommonLabActivatableSubClass::AddStackable(FGameplayTag Tag)
 {
 	UCommonLabActivatableStackable* LayerStack = NewObject<UCommonLabActivatableStackable>(Root->WidgetTree, Tag.GetTagName());
-	LayerStack->SetVisibility(ESlateVisibility::Collapsed);
+	LayerStack->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	
 	UOverlaySlot* OverlaySlot = RootOverlay->AddChildToOverlay(LayerStack);
 	OverlaySlot->SetHorizontalAlignment(HAlign_Fill);
