@@ -20,16 +20,16 @@ class COMMONLAB_API UCommonLabActivatableStackable : public UCommonActivatableWi
 
 public:
 
+	
+	
+
+	// ~Begin Stackable Function
 	void SetPrevStackable(UCommonLabActivatableStackable* Stackable);
 	UCommonLabActivatableStackable* GetPrevStackable() const { return PrevStackable.IsValid() ? PrevStackable.Get() : nullptr; }
 	UCommonLabActivatableWidget* GetPrevActivatableWidgetInStack(UCommonLabActivatableWidget* CurrentWidget);
+	// ~End Stackable Function
 
 protected:
 
 	TWeakObjectPtr<UCommonLabActivatableStackable> PrevStackable;
-
-	
-	
-	
-	
 };

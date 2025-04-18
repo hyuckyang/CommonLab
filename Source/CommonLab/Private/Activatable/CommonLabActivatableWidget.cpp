@@ -9,11 +9,11 @@
 void UCommonLabActivatableWidget::NativeOnActivated()
 {
 	Super::NativeOnActivated();
+
 	/*
 	 * 이전에 활성화된 위젯이 있다면, 해당 위젯에 OnOverlap 을 호출합니다.
 	 * 즉, 현재 위젯의 Stackable 의 이전 Stackable 의 마지막 위젯을 가져와서 OnOverlap 을 호출 합니다.))
 	 */
-
 	if (ActivatableStackable.IsValid())
 	{
 		if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
@@ -25,18 +25,17 @@ void UCommonLabActivatableWidget::NativeOnActivated()
 
 void UCommonLabActivatableWidget::NativeOnDeactivated()
 {
-	// 
-	// if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
-	// {
-	// 	Prev->NativeOnOverlap(this, false);
-	// }
+	if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
+	{
+		Prev->NativeOnOverlap(this, false);
+	}
 
 	Super::NativeOnDeactivated();
 }
 
 void UCommonLabActivatableWidget::NativeOnOverlap(UCommonLabActivatableWidget* OtherWidget, bool bIsOverlapping)
 {
-	
+	BP_OnOverlap(OtherWidget, bIsOverlapping);
 }
 
 TOptional<FUIInputConfig> UCommonLabActivatableWidget::GetDesiredInputConfig() const
@@ -55,8 +54,9 @@ TOptional<FUIInputConfig> UCommonLabActivatableWidget::GetDesiredInputConfig() c
 	}
 }
 
-void UCommonLabActivatableWidget::SetActivatedStackable(UCommonLabActivatableStackable* Stackable)
+void UCommonLabActivatableWidget::SetActivatableStackable(UCommonLabActivatableStackable* Stackable)
 {
 	ActivatableStackable = Stackable;
 }
+
 

@@ -36,17 +36,17 @@ public:
 	virtual void NativeOnDeactivated() override;
 	
 	// ~Begin Overlap , 다른 창이 본인 창으로 올라올 때, 혹은 사라질 때 호출 됩니다.
-	void NativeOnOverlap(UCommonLabActivatableWidget* OtherWidget, bool bIsOverlapping);
-
-	
+	UFUNCTION(BlueprintImplementableEvent, Category=CommonLabActivatable, meta =(DisplayName="OnOverlap"))
+	void BP_OnOverlap(UCommonLabActivatableWidget* OtherWidget, bool bIsOverlapping);
+	virtual void NativeOnOverlap(UCommonLabActivatableWidget* OtherWidget, bool bIsOverlapping);
 	// ~End Overlap
 	
 	// ~Begin UCommonActivatableWidget interface
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;	
 	// ~End UCommonActivatableWidget interface
 
-	void SetActivatedStackable(UCommonLabActivatableStackable* Stackable);
-	
+	// 셋팅
+	void SetActivatableStackable(UCommonLabActivatableStackable* Stackable);
 protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = CommonLabInput)
