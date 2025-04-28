@@ -3,12 +3,12 @@
 
 #include "Activatable/CommonLabActivatableSubClass.h"
 #include "Activatable/CommonLabActivatableSettings.h"
+#include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
-
 
 void UCommonLabActivatableSubClass::Initialize()
 {
@@ -35,20 +35,25 @@ void UCommonLabActivatableSubClass::Destroyed()
 void UCommonLabActivatableSubClass::AddRootFromViewport()
 {
 	// Root 를 생성, 이미 있다면 해당 로직은 무시 됩니다.
-	if (Root.IsValid() || !LocalPlayer.IsValid())
+	if (Root != nullptr || !LocalPlayer.IsValid())
 		return;
 
 	if (APlayerController* PC = LocalPlayer->GetPlayerController(GetWorld()))
 	{
 		// Root 생성
-		const UCommonLabActivatableSettings* Setting = GetDefault<UCommonLabActivatableSettings>();
-		// if (!Setting->RootLayoutClass.IsValid())
-		// 	return;
-
-		TSubclassOf<UUserWidget> RootClass = Setting->RootLayoutClass.TryLoadClass<UUserWidget>();
-		Root = CreateWidget<UUserWidget>(PC, RootClass);
-		//Root = CreateWidget<UCommonUserWidget>(PC, UCommonUserWidget::StaticClass());
+		Root = Cast<UUserWidget>(CreateWidget<UCommonUserWidget>(GetWorld(), UCommonUserWidget::StaticClass(), FName(TEXT("CommonLab Activatable Root"))));
 		Root->SetPlayerContext(FLocalPlayerContext(Cast<ULocalPlayer>(LocalPlayer.Get())));
+
+		// UCommonUserWidget::StaticClass 으로 생성 시, WidgetTree 혹은 (블루프린트로) WidgetTree 의 루트 위젯이 없으며 이때 AddToPlayerScreen 를 시도시,
+		// 제대로 된 UMG 루트 내에 생성이 안될 수 있습니다. ( 실제로 안됩니다. )
+		// Root 생성 직후  WidgetTree 가 없다면 WidgetTree 를 생성
+		// 그리고 RootOverlay 를 설정 합니다.
+		if (Root->WidgetTree == nullptr)
+			Root->WidgetTree = NewObject<UWidgetTree>();
+
+		RootOverlay = Root->WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass(), TEXT("Main_Overlay"));
+		Root->WidgetTree->RootWidget = RootOverlay;
+
 		Root->AddToPlayerScreen(1000); // 기본 레이어
 
 #if WITH_EDITOR
@@ -61,23 +66,7 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 		}
 #endif
 
-		
-		// Root 아래에 UOverlay 를 생성합니다.
-		// RootOverlay = NewObject<UOverlay>(Root.Get(), TEXT("Main_Overlay"));
-		// Root->WidgetTree->SetContentForSlot(FName(TEXT("Main_Overlay")), Cast<UWidget>(RootOverlay));
-
-		// 최초 검색되는 UOverlay 가 Root 아래에 존재하는 Overlay 입니다. 
-		const UWidgetTree* Tree = Root.Get()->WidgetTree;
-		Tree->ForEachWidget([this](UWidget* Widget)
-		{
-			if (RootOverlay.IsValid())
-				return;
-			
-			if (UOverlay* Overlay = Cast<UOverlay>(Widget))
-			{
-				RootOverlay = Overlay;
-			}
-		});
+		const UCommonLabActivatableSettings* Setting = GetDefault<UCommonLabActivatableSettings>();
 		
 		for (int32 i = 0; i < Setting->ActivatableStackTags.Num(); i++)
 		{
@@ -107,15 +96,15 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 
 void UCommonLabActivatableSubClass::RemoveRootFromViewport()
 {
-	if (!Root.IsValid())
-		return;
-
-	// 캐싱된 위젯을 가져 옵니다.
-	TWeakPtr<SWidget> LayoutSlateWidget = Root->GetCachedWidget();
-	if(LayoutSlateWidget.IsValid())
+	if (Root != nullptr)
 	{
-		// Cache 위젯이 존재한다면 Remove 합니다.
-		Root->RemoveFromParent();
+		// 캐싱된 위젯을 가져 옵니다.
+		TWeakPtr<SWidget> LayoutSlateWidget = Root->GetCachedWidget();
+		if(LayoutSlateWidget.IsValid())
+		{
+			// Cache 위젯이 존재한다면 Remove 합니다.
+			Root->RemoveFromParent();
+		}	
 	}
 }
 
@@ -123,8 +112,8 @@ void UCommonLabActivatableSubClass::DestroyRootFromViewport()
 {
 	RemoveRootFromViewport();
 	
-	RootOverlay.Reset();
-	Root.Reset();
+	RootOverlay = nullptr;
+	Root = nullptr;
 }
 
 UCommonLabActivatableStackable* UCommonLabActivatableSubClass::AddStackable(FGameplayTag Tag)

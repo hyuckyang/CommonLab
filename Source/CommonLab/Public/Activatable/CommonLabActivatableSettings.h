@@ -29,9 +29,7 @@ struct FCommonLabActivatableLevelStruct
 
 	UPROPERTY(EditAnywhere, Category = PrimaryActivatable)
 	FCommonLabActivatableStruct ActivatableStruct;
-	
 };
-
 
 /**
  * 
@@ -46,17 +44,16 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = CommonLabActivatable)
 	TArray<FGameplayTag> ActivatableStackTags;
 	
-	UPROPERTY(Config, EditAnywhere, Category = CommonLabActivatable)
-	FSoftClassPath RootLayoutClass;
-
 	/*
-	 * (LevelActivatableClasses 에 등록되지 않는) 모든 레벨이 기본으로 등록되는 기본 UI Widget 
+	 * (LevelActivatableClasses 에 등록되지 않는) 모든 레벨이 기본으로 등록되는 기본 UI Widget
+	 * 등록하지 않고, 레벨 접속 시 Open 함수를 통해 시도해도 됩니다.
 	 */
 	UPROPERTY(Config, EditAnywhere, Category = CommonLabActivatable)
 	FCommonLabActivatableStruct BasedActivatable;
 
 	/*
 	 * 특정 레벨 에 출력되는 UI Widget
+	 * 등록하지 않고, 레벨 접속 시 Open 함수를 통해 시도해도 됩니다.
 	 */
 	UPROPERTY(Config, EditAnywhere, Category = CommonLabActivatable)
 	TArray<FCommonLabActivatableLevelStruct> LevelActivatableStructs;

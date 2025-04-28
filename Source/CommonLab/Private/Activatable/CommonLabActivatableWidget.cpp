@@ -3,8 +3,6 @@
 
 #include "Activatable/CommonLabActivatableWidget.h"
 #include "Activatable/CommonLabActivatableStackable.h"
-#include "CommonUILibrary.h"
-
 
 void UCommonLabActivatableWidget::NativeOnActivated()
 {
@@ -25,9 +23,12 @@ void UCommonLabActivatableWidget::NativeOnActivated()
 
 void UCommonLabActivatableWidget::NativeOnDeactivated()
 {
-	if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
+	if (ActivatableStackable.IsValid())
 	{
-		Prev->NativeOnOverlap(this, false);
+		if (UCommonLabActivatableWidget* Prev = ActivatableStackable.Get()->GetPrevActivatableWidgetInStack(this))
+		{
+			Prev->NativeOnOverlap(this, false);
+		}	
 	}
 
 	Super::NativeOnDeactivated();

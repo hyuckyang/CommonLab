@@ -12,28 +12,7 @@
 #include "CommonLabActivatableSubClass.generated.h"
 
 class UOverlay;
-
-// USTRUCT()
-// struct FStackableTagKey
-// {
-// 	GENERATED_BODY()
-//
-// 	// 중요한 것은 Tag 입니다. Order 는 필요에 의해 생성된 변수입니다.
-// 	FGameplayTag Tag;
-// 	int32 Order;
-//
-// 	FStackableTagKey(int32 InOrder, FGameplayTag InTag)
-// 		: Tag(InTag)
-// 		, Order(InOrder)
-// 	{
-// 	}
-//
-// 	
-// 	bool operator<(const FStackableTagKey& Other) const
-// 	{
-// 		return Tag == Other.Tag;
-// 	}
-// };
+class UCommonUserWidget;
 
 /**
  * 
@@ -76,7 +55,7 @@ public:
 		if (TIsDerivedFrom<Activatable, UCommonLabActivatableWidget>::IsDerived == false)
 			return nullptr;
 
-		if (!Root.IsValid() || ActivatableClass == nullptr)
+		if (Root == nullptr || ActivatableClass == nullptr)
 			return nullptr;
 
 		if (TWeakObjectPtr<UCommonLabActivatableStackable> Stackable = ActivatableStacks.FindRef(Tag); Stackable.IsValid())
@@ -95,8 +74,6 @@ public:
 		return nullptr;
 	}
 
-	
-
 private:
 
 	void AddRootFromViewport();
@@ -109,8 +86,11 @@ private:
 	/*
 	 * Add to Viewport 를 동해 뷰포트에 출력되는 Root 위젯 , Root 아래에 Tag 별로 Stackable 이 생성되고 그 아래 실제 화면에 보여지는 UI 가 생성됩니다.
 	 */
-	TWeakObjectPtr<UUserWidget> Root;
-	TWeakObjectPtr<UOverlay> RootOverlay;
+	UPROPERTY()
+	TObjectPtr<UUserWidget> Root;
+	
+	UPROPERTY()
+	TObjectPtr<UOverlay> RootOverlay;
 
 	// GameplayTag 별로 Stackable 을 생성
 	// 
