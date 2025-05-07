@@ -9,6 +9,7 @@
 #include "CommonLabActivatableWidget.h"
 #include "CommonLabSubClassInterface.h"
 #include "CommonLabActivatableStackable.h"
+#include "CommonLabSubsystem.h"
 #include "CommonLabActivatableSubClass.generated.h"
 
 class UOverlay;
@@ -30,7 +31,6 @@ public:
 	virtual void Destroyed() override;
 	// ~End ICommonLabSubClassInterface
 
-
 	template <typename Activatable = UCommonLabActivatableWidget>
 	Activatable* Open(FGameplayTag Tag, FString Path)
 	{
@@ -51,6 +51,8 @@ public:
 	template <typename Activatable = UCommonLabActivatableWidget>
 	Activatable* Open(FGameplayTag Tag, UClass* ActivatableClass, TFunctionRef<void(Activatable&)> Function)
 	{
+		UE_LOG(LogTemp, Display, TEXT("UCommonLabActivatableSubClass::Open"));
+		
 		// 선언한 클래스가 UCommonLabActivatableWidget 상속받지 않는 객체라면
 		if (TIsDerivedFrom<Activatable, UCommonLabActivatableWidget>::IsDerived == false)
 			return nullptr;
@@ -69,6 +71,7 @@ public:
 				}
 			};
 
+			
 			return Stackable->AddWidget<Activatable>(ActivatableClass, LambInitialize);
 		}
 		return nullptr;

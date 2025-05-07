@@ -7,8 +7,6 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
 
 void UCommonLabActivatableSubClass::Initialize()
 {
@@ -96,16 +94,16 @@ void UCommonLabActivatableSubClass::AddRootFromViewport()
 
 void UCommonLabActivatableSubClass::RemoveRootFromViewport()
 {
-	if (Root != nullptr)
+	if (Root == nullptr)
+		return;
+
+	// 캐싱된 위젯을 가져 옵니다.
+	TWeakPtr<SWidget> LayoutSlateWidget = Root->GetCachedWidget();
+	if(LayoutSlateWidget.IsValid())
 	{
-		// 캐싱된 위젯을 가져 옵니다.
-		TWeakPtr<SWidget> LayoutSlateWidget = Root->GetCachedWidget();
-		if(LayoutSlateWidget.IsValid())
-		{
-			// Cache 위젯이 존재한다면 Remove 합니다.
-			Root->RemoveFromParent();
-		}	
-	}
+		// Cache 위젯이 존재한다면 Remove 합니다.
+		Root->RemoveFromParent();
+	}	
 }
 
 void UCommonLabActivatableSubClass::DestroyRootFromViewport()
