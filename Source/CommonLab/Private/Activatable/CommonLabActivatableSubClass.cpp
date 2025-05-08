@@ -17,7 +17,7 @@ void UCommonLabActivatableSubClass::Initialize()
 	// 	AddActivatableClass();
 	// }));
 
-	// 호출 순서가 명확하기에 ( 레벨 초기화 이후 APlayerController::ReceivedPlayer 에 의해 호출 ) 위의 1 Tick 을 대기하는 것은 일단 보류 합니다.
+	// 호출 순서가 명확하기에 위의 1 Tick 을 대기하는 것은 일단 보류 합니다.
 	AddRootFromViewport();
 	AddActivatableClass();
 }
