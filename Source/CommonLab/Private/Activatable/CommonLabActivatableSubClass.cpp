@@ -1,22 +1,25 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Activatable/CommonLabActivatableSubClass.h"
 #include "Activatable/CommonLabActivatableSettings.h"
-#include "TimerManager.h"
+//#include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 
 void UCommonLabActivatableSubClass::Initialize()
 {
-	// 게임이 초기화 되고, 그 초기화된 상태에서 위젯이 초기화 되겠금 유도 하였습니다.
-	// 즉 GameMode, GameInstance, LocalPlayer 가 초기화 된 상태에서 위젯이 초기화 되도록 합니다
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateLambda([this]()
-	{
-		AddRootFromViewport();
-		AddActivatableClass();
-	}));
+	// // 게임이 초기화 되고, 그 초기화된 상태에서 위젯이 초기화 되겠금 유도 하였습니다.
+	// // 즉 GameMode, GameInstance, LocalPlayer 가 초기화 된 상태에서 위젯이 초기화 되도록 합니다
+	// GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateLambda([this]()
+	// {
+	// 	AddRootFromViewport();
+	// 	AddActivatableClass();
+	// }));
+
+	// 호출 순서가 명확하기에 ( 레벨 초기화 이후 APlayerController::ReceivedPlayer 에 의해 호출 ) 위의 1 Tick 을 대기하는 것은 일단 보류 합니다.
+	AddRootFromViewport();
+	AddActivatableClass();
 }
 
 void UCommonLabActivatableSubClass::Released()

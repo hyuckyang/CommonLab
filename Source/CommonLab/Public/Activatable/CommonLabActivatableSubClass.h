@@ -15,6 +15,7 @@
 class UOverlay;
 class UCommonUserWidget;
 
+
 /**
  * 
  */
@@ -51,8 +52,6 @@ public:
 	template <typename Activatable = UCommonLabActivatableWidget>
 	Activatable* Open(FGameplayTag Tag, UClass* ActivatableClass, TFunctionRef<void(Activatable&)> Function)
 	{
-		UE_LOG(LogTemp, Display, TEXT("UCommonLabActivatableSubClass::Open"));
-		
 		// 선언한 클래스가 UCommonLabActivatableWidget 상속받지 않는 객체라면
 		if (TIsDerivedFrom<Activatable, UCommonLabActivatableWidget>::IsDerived == false)
 			return nullptr;
@@ -64,13 +63,12 @@ public:
 		{
 			auto LambInitialize = [Stackable, Function](Activatable& Widget)
 			{
-				Function(Widget);
 				if (UCommonLabActivatableWidget* ActivatableWidget = Cast<UCommonLabActivatableWidget>(&Widget))
 				{
 					ActivatableWidget->SetActivatableStackable(Stackable.Get());
 				}
+				Function(Widget);
 			};
-
 			
 			return Stackable->AddWidget<Activatable>(ActivatableClass, LambInitialize);
 		}
