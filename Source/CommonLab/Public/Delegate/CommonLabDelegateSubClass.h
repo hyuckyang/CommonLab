@@ -35,9 +35,12 @@ public:
 
 	static void CLabDeallocate(ULocalPlayer* LocalPlayer, UObject* Object)
 	{
-		if (UCommonLabDelegateSubClass* DelegateSubClass =  LocalPlayer->GetGameInstance()->GetSubsystem<UCommonLabSubsystem>()->GetSubClass<UCommonLabDelegateSubClass>(LocalPlayer))
+		if (LocalPlayer != nullptr)
 		{
-			DelegateSubClass->Deallocate(Object);
+			if (UCommonLabDelegateSubClass* DelegateSubClass =  LocalPlayer->GetGameInstance()->GetSubsystem<UCommonLabSubsystem>()->GetSubClass<UCommonLabDelegateSubClass>(LocalPlayer))
+			{
+				DelegateSubClass->Deallocate(Object);
+			}	
 		}
 	}
 	
@@ -52,7 +55,7 @@ public:
 	{
 		TSharedPtr<FCommonLabDelegate<Params...>> Delegate;
 
-		FString UnifyName = GetDelegateName<Params...>(DelegateName);
+		FString UnifyName = GetDelegateName(DelegateName);
 		if (TSharedPtr<FCommonLabDelegateBase> Baesd = DelegateBasedMap.FindRef(UnifyName))
 		{
 			Delegate = StaticCastSharedPtr<FCommonLabDelegate<Params...>>(Baesd);
@@ -76,7 +79,7 @@ public:
 	template <typename... Params>
 	FCommonLabDelegate<Params...>* Find(const FString& DelegateName)
 	{
-		FString UnifyName = GetDelegateName<Params...>(DelegateName);
+		FString UnifyName = GetDelegateName(DelegateName);
 		if (TSharedPtr<FCommonLabDelegateBase> Based = DelegateBasedMap.FindRef(UnifyName))
 		{
 			return StaticCastSharedPtr<FCommonLabDelegate<Params...>>(Based).Get();
@@ -88,7 +91,7 @@ public:
 	template <typename... Params>
 	void FindExecute(const FString& DelegateName, Params... Args)
 	{
-		if (FCommonLabDelegate<Params...> Delegate = Find<Params...>(DelegateName))
+		if (FCommonLabDelegate<Params...>* Delegate = Find<Params...>(DelegateName))
 		{
 			Delegate->Execute(Args...);
 		}
@@ -98,7 +101,6 @@ private:
 	/*
 	 * 추가 개발 사항, 인자의 순서와 상관이 없습니다. 즉 인자의 순서에 따른 DelegateName 를 내뱉는 작업을 별도로 진행해야 합니다. 
 	 */
-	template<typename... Params>
 	static FString GetDelegateName(const FString& DelegateName)
 	{
 		return FString::Printf(TEXT("%s_%s"), *DelegateName, *GET_PARAMS_STRING(Params...));
