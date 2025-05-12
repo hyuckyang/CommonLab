@@ -27,5 +27,8 @@ public:
 	static UCommonLabActivatableWidget* Open_ActivatableWidgetByLocalPlayer(ULocalPlayer* LocalPlayer, FGameplayTag Tag, TSubclassOf<UCommonLabActivatableWidget> TClass);
 	
 #pragma endregion
+
+	UFUNCTION(BlueprintCallable)
+	static void FindExecuteCommand(UObject* Object, const FString& CommandName);
 	
 };

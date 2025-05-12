@@ -4,6 +4,7 @@
 #include "BPFunctionLibrary/CommonLabBPFunctionLibrary.h"
 #include "Activatable/CommonLabActivatableSubClass.h"
 #include "GameplayTagContainer.h"
+#include "Delegate/CommonLabDelegateSubClass.h"
 
 UCommonLabActivatableWidget* UCommonLabBPFunctionLibrary::Open_ActivatableWidget(UObject* Object, FGameplayTag Tag, TSubclassOf<UCommonLabActivatableWidget> TClass)
 {
@@ -24,4 +25,15 @@ UCommonLabActivatableWidget* UCommonLabBPFunctionLibrary::Open_ActivatableWidget
 		}
 	}
 	return nullptr;
+}
+
+void UCommonLabBPFunctionLibrary::FindExecuteCommand(UObject* Object, const FString& CommandName)
+{
+	if (ULocalPlayer* LocalPlayer = Object->GetWorld()->GetFirstLocalPlayerFromController())
+	{
+		if (UCommonLabDelegateSubClass* DelegateSubClass = LocalPlayer->GetGameInstance()->GetSubsystem<UCommonLabSubsystem>()->GetSubClass<UCommonLabDelegateSubClass>(LocalPlayer))
+		{
+			DelegateSubClass->FindExecute(CommandName);
+		}	
+	}
 }
