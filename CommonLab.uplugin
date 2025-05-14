@@ -28,7 +28,8 @@
 		{
 			"Name": "CommonLabPreLoadingScreen",
 			"Type": "ClientOnly",
-			"LoadingPhase": "PreLoadingScreen"
+			"LoadingPhase": "PreLoadingScreen",
+			"EnabledByDefault": false
 		}
 	],
 	"Plugins": [
