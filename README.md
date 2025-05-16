@@ -66,7 +66,15 @@ CommonLabInputActionDecorator
 >>> 런타임(게임 플레이) 도중, 입력 값(키보드/게임패드등)을 감지, 실시간으로 키 아이콘이 변경 됩니다.</br>
 </br>
 
+# CommonLabLoadingScreen
+Unreal CommonLoadingScreen 기반 로딩 매니저 입니다. (코드는 모두 상속이 아닌 재작성)</br>>
+Unreal CommonLoadingScreen 와  90% 이상 같으며 다만, 페이드 인/아웃, 로딩 위젯의 입력값 설정 등을 추가되었으며 현재 작성 중</br>
+</br>
 
+# CommonLabPreLoadingScreen
+Unreal CommonPreLoadingScreen 기반 Pre 로딩 매니저 입니다. </br>
+Unreal CommonPreLoadingScreen 은 단순 검은 화면이 기본이기에, 1장의 이미지와, Loading Indicaotor 가 추가 될 예정이며 현재 작성 중</br>
+</br>
 
 
 
