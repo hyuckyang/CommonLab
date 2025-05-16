@@ -74,6 +74,7 @@ Unreal CommonLoadingScreen 와  90% 이상 같으며 다만, 페이드 인/아�
 # CommonLabPreLoadingScreen
 Unreal CommonPreLoadingScreen 기반 Pre 로딩 매니저 입니다. </br>
 Unreal CommonPreLoadingScreen 은 단순 검은 화면이 기본이기에, 1장의 이미지와, Loading Indicaotor 가 추가 될 예정이며 현재 작성 중</br>
+기본 비활성화 상태 입니다. ["EnabledByDefault": false] </br>
 </br>
 
 
