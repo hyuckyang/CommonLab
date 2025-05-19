@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(Config=GAME, defaultconfig, meta=(DisplayName="CommonLab Pre Loading Screen Setting"))
+UCLASS(Config=GAME, defaultconfig, meta=(DisplayName="Common Lab Pre Loading Screen Setting"))
 class UCommonLabPreLoadingScreenSetting : public UDeveloperSettings
 {
 	GENERATED_BODY()
@@ -28,27 +28,17 @@ public:
 
 	// ~Begin CircleThrobber Group
 	
-	UPROPERTY(Config, meta=(Hidden))
-	bool bIsPreLoadingCircleThrobber = false;
-
 	UPROPERTY(config, EditAnywhere, Category=Display, meta=(BlueprintBaseOnly=true, AllowedClasses = "/Script/Engine.Texture2D"))
 	FSlateBrush PreLoadingCircleThrobberImage;
 	
-	UPROPERTY(config, EditAnywhere, Category=Display, meta=(EditCondition="bIsPreLoadingCircleThrobber"))
+	UPROPERTY(config, EditAnywhere, Category=Display)
 	int32 PreLoadingCircleNumberOfPieces = 0;
 	
-	UPROPERTY(config, EditAnywhere, Category=Display, meta=(EditCondition="bIsPreLoadingCircleThrobber"))
+	UPROPERTY(config, EditAnywhere, Category=Display)
 	float PreLoadingCirclePeriod = 0.f;
 	
-	UPROPERTY(config, EditAnywhere, Category=Display, meta=(EditCondition="bIsPreLoadingCircleThrobber"))
+	UPROPERTY(config, EditAnywhere, Category=Display)
 	float PreLoadingCircleRadius = 0.f;
 
 	// ~End CircleThrobber Group
-
-#if WITH_EDITOR //
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
-	
-
-	
 };

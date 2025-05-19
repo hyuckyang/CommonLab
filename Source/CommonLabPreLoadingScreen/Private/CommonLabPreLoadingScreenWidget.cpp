@@ -41,7 +41,7 @@ void SCommonLabPreLoadingScreenWidget::Construct(const FArguments& InArgs)
 					{
 						return FCommonLabPreLoadingScreenModule::s_LoadedPreScreenImage->GetSlateBrush();
 					})
-			.ColorAndOpacity_Lambda([this]()
+				.ColorAndOpacity_Lambda([this]()
 				{
 					return FSlateColor(FLinearColor(1, 1, 1, 1.0f));
 				})
@@ -71,7 +71,9 @@ void SCommonLabPreLoadingScreenWidget::Construct(const FArguments& InArgs)
 	// 	];
 	// }
 
-	if (LoadingScreenSettings->bIsPreLoadingCircleThrobber)
+	// PreLoadingCircleThrobberImage -> Circle Throbber 의 Piece 이미지가 존재한다면, 생성 합니다.
+	if (UObject* RObject = LoadingScreenSettings->PreLoadingCircleThrobberImage.GetResourceObject();
+		RObject != nullptr && Cast<UTexture2D>(RObject) != nullptr)
 	{
 		TSharedRef<SCircularThrobber> Circular = SNew(SCircularThrobber)
 		.PieceImage(&LoadingScreenSettings->PreLoadingCircleThrobberImage)
