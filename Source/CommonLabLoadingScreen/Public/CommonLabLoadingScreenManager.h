@@ -3,61 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CommonLabLoadingShouldInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CommonLabLoadingScreenManager.generated.h"
 
-UCLASS()
-class UFadeProcess : public UObject
-{
-	GENERATED_BODY()
-
-protected:
-	enum EFadeProcess
-	{
-		None,
-		Start,
-		Tick,
-		Complete,
-	};
-
-	bool bIsFade = false;
-	float FadeFrom = 0.f;
-	float FadeTo = 0.f;
-	FLinearColor FadeColor = FLinearColor::Black;
-	EFadeProcess FadeProcess = None;
-
-	float Elapsed = 0.f;
-	float Duration = 0.f;
-	
-
-	TSharedPtr<SWidget> SFadeWidget;
-
-public:
-	virtual void Clean();
-	// 
-	virtual void FadeFunc(bool bFadeOut, float Transition, FLinearColor Color = FLinearColor(0.f, 0.f, 0.f, 1.f));
-	virtual bool FadeTick(float DeltaTime);
-
-protected:
-
-	void SetViewportFadeWidget(bool bIsShow);
-	/*
-	 * 기본으로 SCommonLabLoadingFadeSWidget 생성합니다.
-	 * 다만 WidgetClass 시 이를 대체할 수 있습니다.
-	 */
-	void SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& SWidget, const TSubclassOf<UUserWidget>& WidgetClass, int32 ZOrder) const;
-	
-	
-};
-
-UCLASS()
-class UOpenLevelProcess : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	
-};
 
 /**
  * 
@@ -82,5 +31,23 @@ public:
 	virtual TStatId GetStatId() const override;
 	virtual UWorld* GetTickableGameObjectWorld() const override;
 	// ~ End of FTickableGameObject Interface
+
+
+private:
+	void HandlePreLoadMap(const FWorldContext& Context, const FString& MapName);
+	void HandlePostLoadMap(UWorld* World);
+
+	/*
+	 * 로딩창이 출력되는지 여부를 체크 합니다. ( 기본부터 인터페이스 까지 )
+	 * Common Loading Screen 과 99% 동일합니다
+	 */
+	bool IsShouldShowLoadScreen() const;
 	
+	void UpdateLoadScreen();
+	void HideLoadScreen();
+
+	bool bCurrentlyInLoadMap = false; // Map 이 로드 중인지 ( Pre -> Post Load Map )
+	bool bCurrentlyShowLoadScreen = false; // Load Screen 을 호출하여 Show 중인지.
+
+	TArray<TWeakInterfacePtr<ICommonLabLoadingShouldInterface>> ShouldLoadingProcess;
 };

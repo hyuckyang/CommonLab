@@ -1,165 +1,20 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CommonLabLoadingScreenManager.h"
-#include "Engine/UserInterfaceSettings.h"
-#include "Widgets/Layout/SDPIScaler.h"
-#include "Kismet/GameplayStatics.h"
-#include "Blueprint/UserWidget.h"
 
-#pragma region Fade SWidget
-
-class SCommonLabLoadingFadeSWidget : public SCompoundWidget
-{
-	
-public:
-	SLATE_BEGIN_ARGS(SCommonLabLoadingFadeSWidget) {}
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& Args, FColor Color)
-	{
-		TSharedRef<SOverlay> Root = SNew(SOverlay);
-		Root->AddSlot()
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill);
-
-		ChildSlot
-		[
-			SNew(SDPIScaler) //
-			.DPIScale(this, &SCommonLabLoadingFadeSWidget::GetDPIScale)
-			[
-				SNew(SOverlay)
-				+ SOverlay::Slot()
-				.HAlign(HAlign_Fill)
-				.VAlign(VAlign_Fill)
-				[
-					SNew(SImage)
-					.Visibility(EVisibility::HitTestInvisible)
-					.ColorAndOpacity(Color)
-				]
-			]
-		];
-	}
-
-private:
-	
-	float GetDPIScale() const
-	{
-		const FVector2D& DrawSize = GetCachedGeometry().ToPaintGeometry().GetLocalSize();
-		const FIntPoint Size(static_cast<int32>(DrawSize.X), static_cast<int32>(DrawSize.Y));
-		return GetDefault<UUserInterfaceSettings>()->GetDPIScaleBasedOnSize(Size); // Project Setting -> User Interface 에 설정된 DPI Scals Curve 등 참조
-	}
-};
-
-#pragma endregion 
-
-#pragma region Fade Process
-
-void UFadeProcess::Clean()
-{
-	if (SFadeWidget.IsValid())
-		SFadeWidget.Reset();
-}
-
-void UFadeProcess::FadeFunc(bool bFadeOut, float Transition, FLinearColor Color)
-{
-	bIsFade = bFadeOut;
-	FadeFrom = bIsFade ? 0.f : 1.f;
-	FadeTo = bIsFade ? 1.f : 0.f;
-
-	
-	FadeProcess = Start;
-}
-
-bool UFadeProcess::FadeTick(float DeltaTime)
-{
-	if (FadeProcess == Start)
-		FadeProcess = Tick;
-
-	return FadeProcess != Complete;
-}
-
-void UFadeProcess::SetViewportFadeWidget(bool bIsShow)
-{
-	// 이미 존재하는데 한번 더 Show 하려 할때는 그대로 남겨둡니다. ( 연속성 )
-	if (SFadeWidget.IsValid() && bIsShow)
-		return;
-	
-	SetViewportWidget(bIsShow, SFadeWidget, nullptr, /* ZOrder */ 0 );
-	if (SFadeWidget.IsValid())
-	{
-		if (TSharedPtr<SCommonLabLoadingFadeSWidget> FadeWidget = StaticCastSharedPtr<SCommonLabLoadingFadeSWidget>(SFadeWidget))
-		{
-			FadeWidget->SetColorAndOpacity(FadeColor);
-		}
-	}
-}
-
-void UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& SWidget, const TSubclassOf<UUserWidget>& WidgetClass, int32 ZOrder) const
-{
-	const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
-	if (!World)
-		return;
-
-	const UGameInstance* GameInstance = World->GetGameInstance();
-	if (!GameInstance)
-		return;
-	
-	if(UGameViewportClient* ViewportClient = GameInstance->GetGameViewportClient())
-	{
-		if (bIsShow)
-		{
-			APlayerController* Controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-			if (!Controller)
-				return;
-			
-			if (WidgetClass.Get() != nullptr)
-			{
-				UUserWidget* Widget = UUserWidget::CreateWidgetInstance(*Controller, WidgetClass, *WidgetClass->GetName());
-				if (!Widget)
-				{
-					SWidget = SNew(SCommonLabLoadingFadeSWidget, FColor::Black);
-				}
-				else
-				{
-					SWidget = Widget->TakeWidget();	
-				}
-			}
-			else
-			{
-				// Base Fade
-				SWidget = SNew(SCommonLabLoadingFadeSWidget, FColor::Black);
-			}
-
-			if (SWidget.IsValid())
-			{
-				SWidget.Get()->SetVisibility(EVisibility::SelfHitTestInvisible);
-				ViewportClient->AddViewportWidgetContent(SWidget.ToSharedRef(), ZOrder);
-			}
-		}
-		else
-		{
-			if (SWidget.IsValid())
-			{
-				ViewportClient->RemoveViewportWidgetContent(SWidget.ToSharedRef());
-			}
-
-			SWidget.Reset();
-		}
-	}
-}
-
-
-#pragma endregion 
+#include "CommonLabLoadingShouldInterface.h"
+#include "GameFramework/GameStateBase.h"
 
 void UCommonLabLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);
+	FCoreUObjectDelegates::PreLoadMapWithContext.AddUObject(this, &ThisClass::HandlePreLoadMap);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &ThisClass::HandlePostLoadMap);
 }
 
 void UCommonLabLoadingScreenManager::Deinitialize()
 {
-	Super::Deinitialize();
+	FCoreUObjectDelegates::PreLoadMap.RemoveAll(this);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
 }
 
 bool UCommonLabLoadingScreenManager::ShouldCreateSubsystem(UObject* Outer) const
@@ -172,6 +27,12 @@ bool UCommonLabLoadingScreenManager::ShouldCreateSubsystem(UObject* Outer) const
 
 void UCommonLabLoadingScreenManager::Tick(float DeltaTime)
 {
+
+	// 로딩 스크린이 끝났다면 더이상 Tick 에서 Screen 필요성을 체크하지 않습니다.
+	if (!bCurrentlyShowLoadScreen)
+		return;
+
+	UpdateLoadScreen();
 }
 
 ETickableTickType UCommonLabLoadingScreenManager::GetTickableTickType() const
@@ -193,7 +54,148 @@ TStatId UCommonLabLoadingScreenManager::GetStatId() const
 
 UWorld* UCommonLabLoadingScreenManager::GetTickableGameObjectWorld() const
 {
-
 	// GameInstance 가 일관된 World 를 반환합니다.
 	return GetGameInstance()->GetWorld();
+}
+
+void UCommonLabLoadingScreenManager::HandlePreLoadMap(const FWorldContext& Context, const FString& MapName)
+{
+	if (Context.OwningGameInstance == GetGameInstance())
+	{
+		bCurrentlyInLoadMap = true;
+
+		// Loading 도중, 기본 Throbber 가 출력되는 것을 예외처리 
+		GEngine->RegisterBeginStreamingPauseRenderingDelegate(nullptr);
+		GEngine->RegisterEndStreamingPauseRenderingDelegate(nullptr);
+	}
+}
+
+void UCommonLabLoadingScreenManager::HandlePostLoadMap(UWorld* World)
+{
+	if((World != nullptr) && World->GetGameInstance() == GetGameInstance())
+	{
+		bCurrentlyInLoadMap = false;
+	}
+}
+
+bool UCommonLabLoadingScreenManager::IsShouldShowLoadScreen() const
+{
+	const UGameInstance* GameInstance = GetGameInstance();
+
+	const FWorldContext* Context = GameInstance->GetWorldContext();
+	if(Context == nullptr)
+		return true;
+
+	UWorld* World = Context->World();
+	if(World == nullptr)
+		return true;
+
+	AGameStateBase* GameState = World->GetGameState<AGameStateBase>();
+	if(GameState == nullptr)
+		return true;
+
+	// 현재 레벨이 로딩 중이라면
+	if(bCurrentlyInLoadMap)
+		return true;
+
+	// 현재 이동이 보류 된? Level 이 있다면 계속 로딩창 이 출력
+	if(!Context->TravelURL.IsEmpty())
+		return true;
+
+	// Context->PendingNetGame 은 일단 체크하지 않습니다.
+
+	// 아직 World의 Begin Play 가 실행되지 않았다면 계속 대기 합니다.
+	if(!World->HasBegunPlay())
+		return true;
+
+	// 현재 World 가 계속 이동중이라면 대기 
+	if(World->IsInSeamlessTravel())
+		return true;
+
+	// Should -> 개발 테스트 중 
+	{
+		//State 자체에 인터페이스가 존재한다면.
+		if(ICommonLabLoadingShouldInterface::ShouldShowLoadingScreen(GameState))
+		{
+			return true;
+		}
+		
+		for(UActorComponent* TestComponent : GameState->GetComponents())
+		{
+			if (ICommonLabLoadingShouldInterface::ShouldShowLoadingScreen(TestComponent))
+			{
+				return true;
+			}
+		}
+		
+		for (TWeakInterfacePtr ShouldInterface : ShouldLoadingProcess)
+		{
+			if (ICommonLabLoadingShouldInterface::ShouldShowLoadingScreen(ShouldInterface.GetObject()))
+				return true;
+		}
+	}
+
+#pragma region 플레이어가 n명 이상 존재시 필요한 로직
+	// 화면 분활 에 따른 로딩
+	// 아래 내용 중 주석 된 내용은 추후 삭제해도 큰 문제가 없습니다.
+	bool bFoundAnyLocalPC = false;
+	bool bMissingAnyLocalPC = false;
+
+	for (ULocalPlayer* LPlayer : GameInstance->GetLocalPlayers())
+	{
+		if(LPlayer != nullptr)
+		{
+			if(APlayerController* PController = LPlayer->PlayerController)
+			{
+				// 로컬 플레이어 중 1명 이라도 컨트롤러가 존재한다면
+				bFoundAnyLocalPC = true;
+
+				// 플레이어 컨트롤러 에도 ICommonLabLoadingShouldInterface 있다면 검사, Should -> 개발 테스트 중 
+				if (ICommonLabLoadingShouldInterface::ShouldShowLoadingScreen(PController))
+					return true;
+			}
+			else
+			{
+				// 로컬 플레이어들 중 1명 이라도 컨트롤러가 없다면
+				bMissingAnyLocalPC = false;
+			}
+		}
+	}
+
+	// Split -> 화면 분활
+	UGameViewportClient* GameViewportClient = GameInstance->GetGameViewportClient();
+	if(GameViewportClient->GetCurrentSplitscreenConfiguration() != ESplitScreenType::None)
+	{
+		// 화면 분활 되었으며 로컬 플레이어 중 1명 이라도 컨트롤러가 없다면
+		if(bMissingAnyLocalPC)
+			return true;
+	}
+	else
+	{
+		// 화면은 1개 이나 플레이어 컨트롤러가 1개 도 없다면
+		if(!bFoundAnyLocalPC)
+			return true;
+	}
+#pragma endregion
+	
+	return false;
+}
+
+void UCommonLabLoadingScreenManager::UpdateLoadScreen()
+{
+	if(IsShouldShowLoadScreen())
+	{
+		// 필요시 로직을 추가 합니다.
+	}
+	else
+	{
+		HideLoadScreen();
+	}
+}
+
+void UCommonLabLoadingScreenManager::HideLoadScreen()
+{
+	// 이미 로딩 스크린이 종료되었다면
+	if (!bCurrentlyShowLoadScreen)
+		return;
 }

@@ -17,7 +17,7 @@ class UCommonLabPreLoadingScreenSetting : public UDeveloperSettings
 public:
 	UCommonLabPreLoadingScreenSetting();
 
-	UPROPERTY(config, EditAnywhere, Category=Display, meta=(BlueprintBaseOnly=true, AllowedClasses = "/Script/Engine.Texture2D"))
+	UPROPERTY(config, EditAnywhere, Category=CommonLabPreLoadingScreen, meta=(BlueprintBaseOnly=true, AllowedClasses = "/Script/Engine.Texture2D"))
 	FSoftObjectPath PreLoadingImage;
 
 	/*
@@ -28,16 +28,16 @@ public:
 
 	// ~Begin CircleThrobber Group
 	
-	UPROPERTY(config, EditAnywhere, Category=Display, meta=(BlueprintBaseOnly=true, AllowedClasses = "/Script/Engine.Texture2D"))
+	UPROPERTY(config, EditAnywhere, Category=CommonLabPreLoadingScreen, meta=(BlueprintBaseOnly=true, AllowedClasses = "/Script/Engine.Texture2D"))
 	FSlateBrush PreLoadingCircleThrobberImage;
 	
-	UPROPERTY(config, EditAnywhere, Category=Display)
+	UPROPERTY(config, EditAnywhere, Category=CommonLabPreLoadingScreen)
 	int32 PreLoadingCircleNumberOfPieces = 0;
 	
-	UPROPERTY(config, EditAnywhere, Category=Display)
+	UPROPERTY(config, EditAnywhere, Category=CommonLabPreLoadingScreen)
 	float PreLoadingCirclePeriod = 0.f;
 	
-	UPROPERTY(config, EditAnywhere, Category=Display)
+	UPROPERTY(config, EditAnywhere, Category=CommonLabPreLoadingScreen)
 	float PreLoadingCircleRadius = 0.f;
 
 	// ~End CircleThrobber Group
