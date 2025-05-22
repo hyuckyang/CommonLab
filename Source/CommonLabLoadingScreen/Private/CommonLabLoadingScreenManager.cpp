@@ -1,18 +1,25 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CommonLabLoadingScreenManager.h"
-
 #include "CommonLabLoadingShouldInterface.h"
+#include "CommonLabLoadingScreenSetting.h"
 #include "GameFramework/GameStateBase.h"
+#include "Process/LoadingProcess.h"
+#include "Blueprint/UserWidget.h"
 
 void UCommonLabLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	FCoreUObjectDelegates::PreLoadMapWithContext.AddUObject(this, &ThisClass::HandlePreLoadMap);
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &ThisClass::HandlePostLoadMap);
+
+	const UGameInstance* LocalGameInstance = GetGameInstance();
+	check(LocalGameInstance);
 }
 
 void UCommonLabLoadingScreenManager::Deinitialize()
 {
+	// CleanUp
+	
 	FCoreUObjectDelegates::PreLoadMap.RemoveAll(this);
 	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
 }
@@ -27,7 +34,6 @@ bool UCommonLabLoadingScreenManager::ShouldCreateSubsystem(UObject* Outer) const
 
 void UCommonLabLoadingScreenManager::Tick(float DeltaTime)
 {
-
 	// 로딩 스크린이 끝났다면 더이상 Tick 에서 Screen 필요성을 체크하지 않습니다.
 	if (!bCurrentlyShowLoadScreen)
 		return;
@@ -56,6 +62,100 @@ UWorld* UCommonLabLoadingScreenManager::GetTickableGameObjectWorld() const
 {
 	// GameInstance 가 일관된 World 를 반환합니다.
 	return GetGameInstance()->GetWorld();
+}
+
+void UCommonLabLoadingScreenManager::OnFade(bool bFadeOut, float Duration, FLinearColor Color)
+{
+	FLinearColor ElapsedColor = FLinearColor::White;
+	float ElapsedTime = 0.f;
+	bool bShouldConnectFade = false;
+
+	if (HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
+		return;
+
+	Process = NewObject<UFadeProcess>(this);
+	if (bShouldConnectFade)
+	{
+		Process->FadeFunc(bFadeOut, ElapsedTime, ElapsedColor, Color);
+	}
+	else
+	{
+		Process->FadeFunc(bFadeOut, Duration, Color);
+	}
+}
+
+void UCommonLabLoadingScreenManager::OnLoadLevel(FName LoadLevel, float Duration, FLinearColor Color)
+{
+	TSubclassOf<UUserWidget> Subclass = nullptr;
+	if (const UCommonLabLoadingScreenSetting* Setting = GetDefault<UCommonLabLoadingScreenSetting>())
+	{
+		Subclass = Setting->DefaultWidgetClass.TryLoadClass<UUserWidget>();
+	}
+
+	OnLoadLevelBySubClass(LoadLevel, Duration, Subclass, Color);
+}
+
+void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color)
+{
+	FLinearColor ElapsedColor = FLinearColor::White;
+	float ElapsedTime = 0.f;
+	bool bShouldConnectFade = false;
+
+	if (HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
+		return;
+
+	if (Process)
+	{
+		if (ULoadingProcess* LoadingProcess = Cast<ULoadingProcess>(Process))
+		{
+			// Fade 가 아닌 로딩 중이라고 한다면, 로딩을 진행하지 않습니다.
+			if (LoadingProcess->IsLoadProcess())
+				return;
+		}
+
+		ElapsedColor = Process->GetElapsedColor();
+		ElapsedTime = Duration - (Duration * Process->GetElapsedRate());
+
+		bShouldConnectFade = true;
+
+		Process->Clean();
+		Process = nullptr;
+	}
+
+	ULoadingProcess* LoadProcess = NewObject<ULoadingProcess>(this);
+	if (bShouldConnectFade)
+	{
+		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color);
+	}
+	else
+	{
+		LoadProcess->LoadStart(Duration, LoadingSubClass, Color);
+	}
+	
+	Process = LoadProcess;
+}
+
+bool UCommonLabLoadingScreenManager::HandleProcessElapsed(float Duration, FLinearColor& OutElapsedColor, float& OutElapsedTime, bool& OutShouldConnectFade)
+{
+	if (Process)
+	{
+		if (ULoadingProcess* LoadingProcess = Cast<ULoadingProcess>(Process))
+		{
+			// Fade 가 아닌 로딩 중이라고 한다면, Fade 를 진행하지 않습니다.
+			if (LoadingProcess->IsLoadProcess())
+				return false;
+		}
+
+		OutElapsedColor = Process->GetElapsedColor();
+		OutElapsedTime = Duration - (Duration * Process->GetElapsedRate());
+
+		OutShouldConnectFade = true;
+
+		Process->Clean();
+		Process = nullptr;
+	}
+
+	return true;
 }
 
 void UCommonLabLoadingScreenManager::HandlePreLoadMap(const FWorldContext& Context, const FString& MapName)

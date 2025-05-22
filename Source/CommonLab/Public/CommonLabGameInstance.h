@@ -17,5 +17,4 @@ class COMMONLAB_API UCommonLabGameInstance : public UGameInstance
 public:
 	virtual int32 AddLocalPlayer(ULocalPlayer* NewPlayer, FPlatformUserId UserId) override;
 	virtual bool RemoveLocalPlayer(ULocalPlayer* ExistingPlayer) override;
-	
 };

@@ -55,6 +55,13 @@ void ULoadingProcess::LoadStart(float Transition, TSubclassOf<UUserWidget> Widge
 	FadeFunc(true, Transition, Color);
 }
 
+void ULoadingProcess::LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor)
+{
+	LoadProcess = Start;
+	
+	FadeFunc(true, Transition, FadeFromColor, FadeToColor);
+}
+
 void ULoadingProcess::LoadEnd()
 {
 	// 기존에 설정된, Duration 을 기반으로 합니다.

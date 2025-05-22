@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CommonLabLoadingScreenManager.generated.h"
 
+class UFadeProcess;
 
 /**
  * 
@@ -32,6 +33,14 @@ public:
 	virtual UWorld* GetTickableGameObjectWorld() const override;
 	// ~ End of FTickableGameObject Interface
 
+	// ~ Process Function
+	void OnFade(bool bFadeOut, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+	void OnLoadLevel(FName LoadLevel, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+	void OnLoadLevelBySubClass(FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+
+private:
+	bool HandleProcessElapsed(float Duration, FLinearColor& OutElapsedColor, float& OutElapsedTime, bool& OutShouldConnectFade);
+	// ~ End Process Function
 
 private:
 	void HandlePreLoadMap(const FWorldContext& Context, const FString& MapName);
@@ -46,6 +55,9 @@ private:
 	void UpdateLoadScreen();
 	void HideLoadScreen();
 
+	UPROPERTY()
+	TObjectPtr<UFadeProcess> Process;
+	
 	bool bCurrentlyInLoadMap = false; // Map 이 로드 중인지 ( Pre -> Post Load Map )
 	bool bCurrentlyShowLoadScreen = false; // Load Screen 을 호출하여 Show 중인지.
 

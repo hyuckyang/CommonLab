@@ -39,8 +39,11 @@ public:
 	virtual void Clean() override;
 	virtual bool FadeTick(float DeltaTime) override;
 
-	void LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color = FLinearColor(0.f, 0.f, 0.f, 1.f));
+	void LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color);
+	void LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor,  FLinearColor FadeToColor);
 	void LoadEnd();
+
+	bool IsLoadProcess() const { return LoadProcess == LoadWaitFrame || LoadProcess == Load; }
 
 private:
 	void SetViewportLoadWidget(bool bIsShow);

@@ -40,6 +40,8 @@ public:
 	virtual void FadeFunc(bool bFadeOut, float Transition, FLinearColor FadeFromColor, FLinearColor FadeToColor);
 	virtual bool FadeTick(float DeltaTime);
 
+	float GetElapsedRate() const { return Elapsed / Duration; }
+	FLinearColor GetElapsedColor() const { return FMath::Lerp(FadeColorFrom, FadeColorTo, GetElapsedRate()); }
 protected:
 
 	void SetViewportFadeWidget(bool bIsShow);
