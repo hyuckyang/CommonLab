@@ -41,23 +41,29 @@ bool ULoadingProcess::FadeTick(float DeltaTime)
 		else if (LoadProcess == Load)
 		{
 			// Next Level Func
-
+			if (LoadCompleteDelegate.IsBound())
+				LoadCompleteDelegate.Execute();
+			
 			LoadProcess = Complete;
 		}
 	}
 	return LoadProcess != ELoadProcess::Complete;
 }
 
-void ULoadingProcess::LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color)
+void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color, TDelegate<void()> LoadDelegate)
 {
 	LoadProcess = Start;
+	LoadSubClass = WidgetSubClass;
+	LoadCompleteDelegate = LoadDelegate;
 	
 	FadeFunc(true, Transition, Color);
 }
 
-void ULoadingProcess::LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor)
+void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor, TDelegate<void()> LoadDelegate)
 {
 	LoadProcess = Start;
+	LoadSubClass = WidgetSubClass;
+	LoadCompleteDelegate = LoadDelegate;
 	
 	FadeFunc(true, Transition, FadeFromColor, FadeToColor);
 }

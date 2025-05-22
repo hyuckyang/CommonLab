@@ -33,14 +33,14 @@ private:
 	TSubclassOf<UUserWidget> LoadSubClass;
 	TWeakObjectPtr<UUserWidget> LoadWidget;
 
-	TDelegate<void()> CompleteDelegate;
+	TDelegate<void()> LoadCompleteDelegate;
 	
 public:
 	virtual void Clean() override;
 	virtual bool FadeTick(float DeltaTime) override;
 
-	void LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color);
-	void LoadStart(float Transition, TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor,  FLinearColor FadeToColor);
+	void LoadStart(float Transition, const TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color, TDelegate<void()> LoadDelegate);
+	void LoadStart(float Transition, const TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor,  FLinearColor FadeToColor, TDelegate<void()> LoadDelegate);
 	void LoadEnd();
 
 	bool IsLoadProcess() const { return LoadProcess == LoadWaitFrame || LoadProcess == Load; }

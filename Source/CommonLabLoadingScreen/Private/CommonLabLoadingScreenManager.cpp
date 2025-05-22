@@ -6,6 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "Process/LoadingProcess.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void UCommonLabLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -19,6 +20,11 @@ void UCommonLabLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collec
 void UCommonLabLoadingScreenManager::Deinitialize()
 {
 	// CleanUp
+	if (Process)
+	{
+		Process->Clean();
+		Process = nullptr;
+	}
 	
 	FCoreUObjectDelegates::PreLoadMap.RemoveAll(this);
 	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
@@ -35,6 +41,10 @@ bool UCommonLabLoadingScreenManager::ShouldCreateSubsystem(UObject* Outer) const
 void UCommonLabLoadingScreenManager::Tick(float DeltaTime)
 {
 	// 로딩 스크린이 끝났다면 더이상 Tick 에서 Screen 필요성을 체크하지 않습니다.
+	if (Process != nullptr && Process->FadeTick(DeltaTime))
+		return;
+
+	
 	if (!bCurrentlyShowLoadScreen)
 		return;
 
@@ -125,11 +135,17 @@ void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, floa
 	ULoadingProcess* LoadProcess = NewObject<ULoadingProcess>(this);
 	if (bShouldConnectFade)
 	{
-		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color);
+		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color, TDelegate<void()>::CreateLambda([this, LoadLevel]()
+		{
+			UGameplayStatics::OpenLevel(GetWorld(), LoadLevel);
+		}));
 	}
 	else
 	{
-		LoadProcess->LoadStart(Duration, LoadingSubClass, Color);
+		LoadProcess->LoadStart(Duration, LoadingSubClass, Color, TDelegate<void()>::CreateLambda([this, LoadLevel]()
+		{
+			UGameplayStatics::OpenLevel(GetWorld(), LoadLevel);
+		}));
 	}
 	
 	Process = LoadProcess;
@@ -156,6 +172,18 @@ bool UCommonLabLoadingScreenManager::HandleProcessElapsed(float Duration, FLinea
 	}
 
 	return true;
+}
+
+void UCommonLabLoadingScreenManager::RegisterShouldInterface(TScriptInterface<ICommonLabLoadingShouldInterface> Interface)
+{
+	if (ShouldLoadingProcess.Contains(Interface.GetObject()) == false)
+		ShouldLoadingProcess.Add(Interface.GetObject());
+}
+
+void UCommonLabLoadingScreenManager::UnRegisterShouldInterface(TScriptInterface<ICommonLabLoadingShouldInterface> Interface)
+{
+	if (ShouldLoadingProcess.Contains(Interface.GetObject()))
+		ShouldLoadingProcess.Remove(Interface.GetObject());
 }
 
 void UCommonLabLoadingScreenManager::HandlePreLoadMap(const FWorldContext& Context, const FString& MapName)
@@ -298,4 +326,16 @@ void UCommonLabLoadingScreenManager::HideLoadScreen()
 	// 이미 로딩 스크린이 종료되었다면
 	if (!bCurrentlyShowLoadScreen)
 		return;
+
+	//
+	// 추가 로직 
+	//
+	
+	bCurrentlyShowLoadScreen = false;
+	
+	if (Process)
+	{
+		if (ULoadingProcess* LoadingProcess = Cast<ULoadingProcess>(Process))
+			LoadingProcess->LoadEnd();
+	}
 }

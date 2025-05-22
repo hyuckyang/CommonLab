@@ -7,7 +7,10 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CommonLabLoadingScreenManager.generated.h"
 
+template <typename InterfaceType> class TScriptInterface;
+
 class UFadeProcess;
+class ICommonLabLoadingShouldInterface;
 
 /**
  * 
@@ -42,6 +45,12 @@ private:
 	bool HandleProcessElapsed(float Duration, FLinearColor& OutElapsedColor, float& OutElapsedTime, bool& OutShouldConnectFade);
 	// ~ End Process Function
 
+public:
+	// ~ Should Interface
+	void RegisterShouldInterface(TScriptInterface<ICommonLabLoadingShouldInterface> Interface);
+	void UnRegisterShouldInterface(TScriptInterface<ICommonLabLoadingShouldInterface> Interface);
+	// ~ End Should Interface	
+	
 private:
 	void HandlePreLoadMap(const FWorldContext& Context, const FString& MapName);
 	void HandlePostLoadMap(UWorld* World);
