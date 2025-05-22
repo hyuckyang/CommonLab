@@ -40,6 +40,7 @@ public:
 	virtual void FadeFunc(bool bFadeOut, float Transition, FLinearColor FadeFromColor, FLinearColor FadeToColor);
 	virtual bool FadeTick(float DeltaTime);
 
+	bool GetIsFadeAway() const { return FadeProcess == Start || FadeProcess == Tick; } // 현재 페이드 중이라면, 
 	float GetElapsedRate() const { return Elapsed / Duration; }
 	FLinearColor GetElapsedColor() const { return FMath::Lerp(FadeColorFrom, FadeColorTo, GetElapsedRate()); }
 protected:
@@ -51,4 +52,5 @@ protected:
 	 * UUserWidget* 에 대해서는 SWidget 의 형변환으로 하는 방법을 찾는다면 수정 될 예정입니다.
 	 */
 	UUserWidget* SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& SWidget, const TSubclassOf<UUserWidget>& WidgetClass, int32 ZOrder) const;
+	void RemoveViewportWidget(TSharedPtr<SWidget> SWidget) const;
 };

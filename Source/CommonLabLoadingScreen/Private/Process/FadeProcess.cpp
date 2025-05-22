@@ -54,8 +54,7 @@ private:
 
 void UFadeProcess::Clean()
 {
-	if (SFadeWidget.IsValid())
-		SFadeWidget.Reset();
+	SetViewportFadeWidget(false);
 }
 
 void UFadeProcess::FadeFunc(bool bFadeOut, float Transition, FLinearColor FadeColor)
@@ -101,12 +100,15 @@ bool UFadeProcess::FadeTick(float DeltaTime)
 	}
 	else
 	{
-		if (SFadeWidget.IsValid())
-			SFadeWidget->SetColorAndOpacity(FadeColorTo);
+		if (FadeProcess != Complete)
+		{
+			if (SFadeWidget.IsValid())
+				SFadeWidget->SetColorAndOpacity(FadeColorTo);
 
-		// Fade In 으로 화면에 복귀 된 경우이기에 바로 삭제 합니다.
-		if (!bIsFade)
-			SetViewportFadeWidget(false);
+			// Fade In 으로 화면에 복귀 된 경우이기에 바로 삭제 합니다.
+			if (!bIsFade)
+				SetViewportFadeWidget(false);
+		}
 
 		FadeProcess = Complete;
 	}
@@ -129,8 +131,20 @@ void UFadeProcess::SetViewportFadeWidget(bool bIsShow)
 	TSharedPtr<SWidget> SWidget;
 	SetViewportWidget(bIsShow, SWidget, nullptr, Order );
 
-	// SFadeWidget 설정 
-	SFadeWidget = StaticCastSharedPtr<SFadeCompoundWidget>(SWidget);
+	// SFadeWidget 설정
+	if (SWidget.IsValid())
+	{
+		SFadeWidget = StaticCastSharedPtr<SFadeCompoundWidget>(SWidget);
+	}
+	else
+	{
+		if (SFadeWidget.IsValid())
+		{
+			//SFadeWidget->SetColorAndOpacity(FLinearColor(0.F, 0.f, 0.f, 0.f));
+			RemoveViewportWidget(SFadeWidget);
+			SFadeWidget.Reset();
+		}
+	}
 }
 
 UUserWidget* UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& SWidget, const TSubclassOf<UUserWidget>& WidgetClass, int32 ZOrder) const
@@ -178,15 +192,34 @@ UUserWidget* UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& 
 		}
 		else
 		{
-			if (SWidget.IsValid())
-			{
-				ViewportClient->RemoveViewportWidgetContent(SWidget.ToSharedRef());
-			}
-
-			SWidget.Reset();
+			// 현재는 의미가 없습니다.
+			// if (SWidget.IsValid())
+			// {
+			// 	ViewportClient->RemoveViewportWidgetContent(SWidget.ToSharedRef());
+			// }
+			// SWidget.Reset();
 		}
 	}
 	
 	return Widget;
+}
+
+void UFadeProcess::RemoveViewportWidget(TSharedPtr<SWidget> SWidget) const
+{
+	const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World)
+		return ;
+
+	const UGameInstance* GameInstance = World->GetGameInstance();
+	if (!GameInstance)
+		return ;
+	
+	if(UGameViewportClient* ViewportClient = GameInstance->GetGameViewportClient())
+	{
+		if (SWidget.IsValid())
+		{
+			ViewportClient->RemoveViewportWidgetContent(SWidget.ToSharedRef());
+		}
+	}
 }
 

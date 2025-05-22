@@ -43,7 +43,6 @@ void UCommonLabLoadingScreenManager::Tick(float DeltaTime)
 	// 로딩 스크린이 끝났다면 더이상 Tick 에서 Screen 필요성을 체크하지 않습니다.
 	if (Process != nullptr && Process->FadeTick(DeltaTime))
 		return;
-
 	
 	if (!bCurrentlyShowLoadScreen)
 		return;
@@ -77,14 +76,15 @@ UWorld* UCommonLabLoadingScreenManager::GetTickableGameObjectWorld() const
 void UCommonLabLoadingScreenManager::OnFade(bool bFadeOut, float Duration, FLinearColor Color)
 {
 	FLinearColor ElapsedColor = FLinearColor::White;
-	float ElapsedTime = 0.f;
+	float ElapsedTime = Duration;
 	bool bShouldConnectFade = false;
-
-	if (HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
+	bool bFadeAway = Process != nullptr ? Process->GetIsFadeAway() : false;
+	
+	if (!HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
 		return;
 
 	Process = NewObject<UFadeProcess>(this);
-	if (bShouldConnectFade)
+	if (bShouldConnectFade && bFadeAway)
 	{
 		Process->FadeFunc(bFadeOut, ElapsedTime, ElapsedColor, Color);
 	}
@@ -110,30 +110,13 @@ void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, floa
 	FLinearColor ElapsedColor = FLinearColor::White;
 	float ElapsedTime = 0.f;
 	bool bShouldConnectFade = false;
-
-	if (HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
+	bool bFadeAway = Process != nullptr ? Process->GetIsFadeAway() : false;
+	
+	if (!HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
 		return;
 
-	if (Process)
-	{
-		if (ULoadingProcess* LoadingProcess = Cast<ULoadingProcess>(Process))
-		{
-			// Fade 가 아닌 로딩 중이라고 한다면, 로딩을 진행하지 않습니다.
-			if (LoadingProcess->IsLoadProcess())
-				return;
-		}
-
-		ElapsedColor = Process->GetElapsedColor();
-		ElapsedTime = Duration - (Duration * Process->GetElapsedRate());
-
-		bShouldConnectFade = true;
-
-		Process->Clean();
-		Process = nullptr;
-	}
-
 	ULoadingProcess* LoadProcess = NewObject<ULoadingProcess>(this);
-	if (bShouldConnectFade)
+	if (bShouldConnectFade && bFadeAway)
 	{
 		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color, TDelegate<void()>::CreateLambda([this, LoadLevel]()
 		{

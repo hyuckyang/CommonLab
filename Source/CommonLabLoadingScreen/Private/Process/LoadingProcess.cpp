@@ -9,8 +9,7 @@ void ULoadingProcess::Clean()
 {
 	Super::Clean();
 
-	if (LoadWidget.IsValid())
-		LoadWidget.Reset();
+	SetViewportLoadWidget(false);
 }
 
 bool ULoadingProcess::FadeTick(float DeltaTime)
@@ -93,6 +92,10 @@ void ULoadingProcess::SetViewportLoadWidget(bool bIsShow)
 	else
 	{
 		if (LoadWidget.IsValid())
+		{
+			RemoveViewportWidget(LoadWidget->TakeWidget());
 			LoadWidget.Reset();
+		}
+			
 	}
 }
