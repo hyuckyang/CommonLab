@@ -9,48 +9,48 @@
 
 #pragma region Fade SWidget
 
-class SFadeCompoundWidget : public SCompoundWidget
+void SFadeCompoundWidget::Construct(const FArguments& Args, FColor Color)
 {
-public:
-	SLATE_BEGIN_ARGS(SFadeCompoundWidget) {}
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& Args, FColor Color)
-	{
-		TSharedRef<SOverlay> Root = SNew(SOverlay);
-		Root->AddSlot()
-		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill);
+	TSharedRef<SOverlay> Root = SNew(SOverlay);
+	Root->AddSlot()
+	.HAlign(HAlign_Fill)
+	.VAlign(VAlign_Fill);
 	
-		ChildSlot
+	ChildSlot
+	[
+		SNew(SDPIScaler) //
+		.DPIScale(this, &SFadeCompoundWidget::GetDPIScale)
 		[
-			SNew(SDPIScaler) //
-			.DPIScale(this, &SFadeCompoundWidget::GetDPIScale)
+			SNew(SOverlay)
+			+ SOverlay::Slot()
+			.HAlign(HAlign_Fill)
+			.VAlign(VAlign_Fill)
 			[
-				SNew(SOverlay)
-				+ SOverlay::Slot()
-				.HAlign(HAlign_Fill)
-				.VAlign(VAlign_Fill)
-				[
-					SNew(SImage)
-					.Visibility(EVisibility::HitTestInvisible)
-					.ColorAndOpacity(Color)
-				]
+				SAssignNew(SFadeImage, SImage)
+				.Visibility(EVisibility::HitTestInvisible)
+				.ColorAndOpacity(Color)
 			]
-		];
-	}
-	
-private:
+		]
+	];
+}
 
-	float GetDPIScale() const
+void SFadeCompoundWidget::SetFadeColor(const FLinearColor& Color) const
+{
+	if (SFadeImage.IsValid())
 	{
-		const FVector2D& DrawSize = GetCachedGeometry().ToPaintGeometry().GetLocalSize();
-		const FIntPoint Size(static_cast<int32>(DrawSize.X), static_cast<int32>(DrawSize.Y));
-		return GetDefault<UUserInterfaceSettings>()->GetDPIScaleBasedOnSize(Size); // Project Setting -> User Interface 에 설정된 DPI Scals Curve 등 참조
+		SFadeImage->SetColorAndOpacity(Color);
 	}
-};
+}
+
+float SFadeCompoundWidget::GetDPIScale() const
+{
+	const FVector2D& DrawSize = GetCachedGeometry().ToPaintGeometry().GetLocalSize();
+	const FIntPoint Size(static_cast<int32>(DrawSize.X), static_cast<int32>(DrawSize.Y));
+	return GetDefault<UUserInterfaceSettings>()->GetDPIScaleBasedOnSize(Size); // Project Setting -> User Interface 에 설정된 DPI Scals Curve 등 참조
+}
 
 #pragma endregion
+
 
 void UFadeProcess::Clean()
 {
@@ -77,6 +77,7 @@ void UFadeProcess::FadeFunc(bool bFadeOut, float Transition, FLinearColor FadeFr
 	bIsFade = bFadeOut;
 	FadeColorFrom = FadeFromColor;
 	FadeColorTo = FadeToColor;
+	FadeColorTo.A = bIsFade ? 1.f : 0.f;
 	FadeProcess = Start;
 	
 	Elapsed = 0.f;
@@ -94,8 +95,9 @@ bool UFadeProcess::FadeTick(float DeltaTime)
 	{
 		const FLinearColor InterpColor = FMath::Lerp(FadeColorFrom, FadeColorTo, Elapsed / Duration);
 		if (SFadeWidget.IsValid())
-			SFadeWidget->SetColorAndOpacity(InterpColor);
-
+		{
+			SFadeWidget->SetFadeColor(InterpColor);
+		}
 		Elapsed += DeltaTime;
 	}
 	else
@@ -103,7 +105,7 @@ bool UFadeProcess::FadeTick(float DeltaTime)
 		if (FadeProcess != Complete)
 		{
 			if (SFadeWidget.IsValid())
-				SFadeWidget->SetColorAndOpacity(FadeColorTo);
+				SFadeWidget->SetFadeColor(FadeColorTo);
 
 			// Fade In 으로 화면에 복귀 된 경우이기에 바로 삭제 합니다.
 			if (!bIsFade)
@@ -140,7 +142,6 @@ void UFadeProcess::SetViewportFadeWidget(bool bIsShow)
 	{
 		if (SFadeWidget.IsValid())
 		{
-			//SFadeWidget->SetColorAndOpacity(FLinearColor(0.F, 0.f, 0.f, 0.f));
 			RemoveViewportWidget(SFadeWidget);
 			SFadeWidget.Reset();
 		}
@@ -171,7 +172,7 @@ UUserWidget* UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& 
 				Widget = UUserWidget::CreateWidgetInstance(*Controller, WidgetClass, *WidgetClass->GetName());
 				if (!Widget)
 				{
-					SWidget = SNew(SFadeCompoundWidget, FColor::Black);
+					SWidget = SNew(SFadeCompoundWidget, FColor::Transparent);
 				}
 				else
 				{
@@ -181,7 +182,7 @@ UUserWidget* UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& 
 			else
 			{
 				// Base Fade
-				SWidget = SNew(SFadeCompoundWidget, FColor::Black);
+				SWidget = SNew(SFadeCompoundWidget, FColor::Transparent);
 			}
 
 			if (SWidget.IsValid())

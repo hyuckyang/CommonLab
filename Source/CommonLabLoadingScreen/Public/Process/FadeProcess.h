@@ -6,6 +6,27 @@
 #include "UObject/Object.h"
 #include "FadeProcess.generated.h"
 
+#pragma region Fade SWidget
+
+class SFadeCompoundWidget : public SCompoundWidget
+{
+	
+private:
+	TSharedPtr<SImage> SFadeImage;
+	
+public:
+	SLATE_BEGIN_ARGS(SFadeCompoundWidget) {}
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& Args, FColor Color);
+	void SetFadeColor(const FLinearColor& Color) const;
+private:
+
+	float GetDPIScale() const;
+};
+
+#pragma endregion
+
 /**
  * 
  */
@@ -31,7 +52,7 @@ protected:
 	float Elapsed = 0.f;
 	float Duration = 0.f;
 	
-	TSharedPtr<SCompoundWidget> SFadeWidget;
+	TSharedPtr<SFadeCompoundWidget> SFadeWidget;
 
 public:
 	virtual void Clean();
