@@ -1,9 +1,67 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Process/LoadingProcess.h"
-#include "CommonLabLoadingScreenSetting.h"
 #include "Blueprint/UserWidget.h"
+#include "CommonLabLoadingScreenSetting.h"
+#include "CommonLabLoadingWidgetInterface.h"
+#include "Framework/Application/IInputProcessor.h"
 
+#pragma region InputProcess , 입력값 처리
+
+class FLoadingProcessInputPreProcess : public IInputProcessor
+{
+private:
+	TWeakObjectPtr<UUserWidget> InputWidget;
+	
+public:
+	FLoadingProcessInputPreProcess(UUserWidget* Widget)
+	{
+		if (Widget && Widget->GetClass()->ImplementsInterface(UCommonLabLoadingWidgetInterface::StaticClass()))
+		{
+			InputWidget = Widget;
+		}
+	}
+	virtual ~FLoadingProcessInputPreProcess() { }
+
+	bool CanEatInput() const
+	{
+		return !GIsEditor;
+	}
+
+	//~IInputProcess interface
+	virtual void Tick(const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor) override { }
+	virtual bool HandleKeyDownEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent) override
+	{
+		if (InputWidget.IsValid())
+		{
+			ICommonLabLoadingWidgetInterface::Execute_OnKeyPressedEvent(InputWidget.Get(), InKeyEvent);
+		}
+		
+		return CanEatInput();
+	}
+	
+	virtual bool HandleKeyUpEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent) override
+	{
+		if (InputWidget.IsValid())
+		{
+			ICommonLabLoadingWidgetInterface::Execute_OnKeyReleaseEvent(InputWidget.Get(), InKeyEvent);
+		}
+		
+		return CanEatInput();
+	}
+
+	// 차후 필요시 
+	virtual bool HandleAnalogInputEvent(FSlateApplication& SlateApp, const FAnalogInputEvent& InAnalogInputEvent) override { return CanEatInput(); }
+	virtual bool HandleMouseMoveEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent) override { return CanEatInput(); }
+	virtual bool HandleMouseButtonDownEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent) override { return CanEatInput(); }
+	virtual bool HandleMouseButtonUpEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent) override { return CanEatInput(); }
+	virtual bool HandleMouseButtonDoubleClickEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent) override { return CanEatInput(); }
+	virtual bool HandleMouseWheelOrGestureEvent(FSlateApplication& SlateApp, const FPointerEvent& InWheelEvent, const FPointerEvent* InGestureEvent) override { return CanEatInput(); }
+	virtual bool HandleMotionDetectedEvent(FSlateApplication& SlateApp, const FMotionEvent& MotionEvent) override { return CanEatInput(); }
+	//~End of IInputProcess interface
+};
+
+#pragma endregion 
 
 void ULoadingProcess::Clean()
 {
@@ -35,6 +93,7 @@ bool ULoadingProcess::FadeTick(float DeltaTime)
 		}
 		else if (LoadProcess == LoadWaitFrame)
 		{
+			SetBlockingInput(true); // -> 로딩 대기 부터 입력을 막습니다.
 			LoadProcess = Load;
 		}
 		else if (LoadProcess == Load)
@@ -72,8 +131,8 @@ void ULoadingProcess::LoadEnd()
 	// 기존에 설정된, Duration 을 기반으로 합니다.
 	// 기존에 설정되어 있으며, 알파값도 그대로 (일 것으로 예상되는) FadeColorTo 를 사용합니다.
 	// FadeColorTo 를 사용 은 테스트 후 별도로 관리 될 수 있습니다.
-
 	SetViewportLoadWidget(false);
+	SetBlockingInput(false); // -> 로딩 대기 부터 막힌 입력을 다시 풀어냅니다.
 	FadeFunc(false, Duration, FadeColorTo);
 }
 
@@ -98,6 +157,25 @@ void ULoadingProcess::SetViewportLoadWidget(bool bIsShow)
 			RemoveViewportWidget(LoadWidget->TakeWidget());
 			LoadWidget.Reset();
 		}
-			
+	}
+}
+
+void ULoadingProcess::SetBlockingInput(bool bIsInputBlock)
+{
+	if (bIsInputBlock)
+	{
+		if (!InputProcessor.IsValid())
+		{
+			InputProcessor = MakeShareable<FLoadingProcessInputPreProcess>(new FLoadingProcessInputPreProcess(LoadWidget.Get()));
+			FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor, 0);
+		}
+	}
+	else
+	{
+		if (InputProcessor.IsValid())
+		{
+			FSlateApplication::Get().UnregisterInputPreProcessor(InputProcessor);
+			InputProcessor.Reset();
+		}
 	}
 }

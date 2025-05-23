@@ -7,6 +7,7 @@
 #include "UObject/Object.h"
 #include "LoadingProcess.generated.h"
 
+class IInputProcessor;
 /**
  * 
  */
@@ -31,10 +32,11 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UUserWidget> LoadSubClass;
-	TWeakObjectPtr<UUserWidget> LoadWidget;
 
+	TWeakObjectPtr<UUserWidget> LoadWidget;
 	TDelegate<void()> LoadCompleteDelegate;
 	
+	TSharedPtr<IInputProcessor> InputProcessor;
 public:
 	virtual void Clean() override;
 	virtual bool FadeTick(float DeltaTime) override;
@@ -46,5 +48,7 @@ public:
 	bool IsLoadProcess() const { return LoadProcess == LoadWaitFrame || LoadProcess == Load; }
 
 private:
+	
 	void SetViewportLoadWidget(bool bIsShow);
+	void SetBlockingInput(bool bIsInputBlock); /* true -> 입력 안됨(FLoadingProcessInputPreProcess 에 권한 넘김), false -> 입력 됨  */
 };
