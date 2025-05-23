@@ -167,12 +167,12 @@ UUserWidget* UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& 
 			if (!Controller)
 				return nullptr;
 			
-			if (WidgetClass.Get() != nullptr)
+			if (WidgetClass && IsValid(WidgetClass.Get()))
 			{
 				Widget = UUserWidget::CreateWidgetInstance(*Controller, WidgetClass, *WidgetClass->GetName());
 				if (!Widget)
 				{
-					SWidget = SNew(SFadeCompoundWidget, FColor::Transparent);
+					SAssignNew(SWidget, SFadeCompoundWidget, FColor::Transparent);
 				}
 				else
 				{
@@ -182,7 +182,7 @@ UUserWidget* UFadeProcess::SetViewportWidget(bool bIsShow, TSharedPtr<SWidget>& 
 			else
 			{
 				// Base Fade
-				SWidget = SNew(SFadeCompoundWidget, FColor::Transparent);
+				SAssignNew(SWidget, SFadeCompoundWidget, FColor::Transparent);
 			}
 
 			if (SWidget.IsValid())

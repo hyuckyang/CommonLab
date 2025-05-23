@@ -19,7 +19,7 @@ void UCommonLabLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collec
 
 void UCommonLabLoadingScreenManager::Deinitialize()
 {
-	// CleanUp
+	// Clean 
 	if (Process)
 	{
 		Process->Clean();
@@ -115,6 +115,8 @@ void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, floa
 	if (!HandleProcessElapsed(Duration, ElapsedColor, ElapsedTime, bShouldConnectFade))
 		return;
 
+	// 로딩 스크린 시작
+	bCurrentlyShowLoadScreen = true; 
 	ULoadingProcess* LoadProcess = NewObject<ULoadingProcess>(this);
 	if (bShouldConnectFade && bFadeAway)
 	{

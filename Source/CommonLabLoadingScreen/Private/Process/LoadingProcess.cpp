@@ -72,6 +72,8 @@ void ULoadingProcess::LoadEnd()
 	// 기존에 설정된, Duration 을 기반으로 합니다.
 	// 기존에 설정되어 있으며, 알파값도 그대로 (일 것으로 예상되는) FadeColorTo 를 사용합니다.
 	// FadeColorTo 를 사용 은 테스트 후 별도로 관리 될 수 있습니다.
+
+	SetViewportLoadWidget(false);
 	FadeFunc(false, Duration, FadeColorTo);
 }
 
