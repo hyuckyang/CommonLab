@@ -86,14 +86,14 @@ bool ULoadingProcess::FadeTick(float DeltaTime)
 			}
 			else
 			{
+				SetBlockingInput(true); // -> 로딩 대기 부터 입력을 막습니다.
 				SetViewportLoadWidget(true);
-				// StartBlockingInput();
 				LoadProcess = LoadWaitFrame;
 			}
 		}
 		else if (LoadProcess == LoadWaitFrame)
 		{
-			SetBlockingInput(true); // -> 로딩 대기 부터 입력을 막습니다.
+			
 			LoadProcess = Load;
 		}
 		else if (LoadProcess == Load)
@@ -108,7 +108,7 @@ bool ULoadingProcess::FadeTick(float DeltaTime)
 	return LoadProcess != ELoadProcess::Complete;
 }
 
-void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor Color, TDelegate<void()> LoadDelegate)
+void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>& WidgetSubClass, FLinearColor Color, const TDelegate<void()>& LoadDelegate)
 {
 	LoadProcess = Start;
 	LoadSubClass = WidgetSubClass;
@@ -117,7 +117,7 @@ void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>
 	FadeFunc(true, Transition, Color);
 }
 
-void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget> WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor, TDelegate<void()> LoadDelegate)
+void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>& WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor, const TDelegate<void()>& LoadDelegate)
 {
 	LoadProcess = Start;
 	LoadSubClass = WidgetSubClass;
