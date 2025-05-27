@@ -24,10 +24,10 @@ struct FCommonLabActivatableLevelStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = PrimaryActivatable, meta=(AllowedClasses = "/Script/Engine.World"))
+	UPROPERTY(EditAnywhere, Category = CommonLabActivatable, meta=(AllowedClasses = "/Script/Engine.World"))
 	FSoftObjectPath Level;
 
-	UPROPERTY(EditAnywhere, Category = PrimaryActivatable)
+	UPROPERTY(EditAnywhere, Category = CommonLabActivatable)
 	FCommonLabActivatableStruct ActivatableStruct;
 };
 

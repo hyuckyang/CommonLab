@@ -17,7 +17,7 @@ class UCommonLabPointTagWidget;
  * PointTag 시스템에서 관리되는 서브클래스의 기본 클래스입니다.
  * Tag 로 출력된 UI 를 찾아냅니다
  * Tag 로 찾아낸 위젯에 특정 기능을 실행합니다.
- * 위젯의 특정 기능은 PrimaryDelegate 를 이용합니다. ( 이름 과 타입으로 설정 )
+ * 위젯의 특정 기능은 CommonLabDelegate 를 이용합니다. ( 이름 과 타입으로 설정 )
  */
 UCLASS(Abstract, Blueprintable)
 class COMMONLAB_API UCommonLabPointTagSubClass : public UObject, public ICommonLabSubClassInterface

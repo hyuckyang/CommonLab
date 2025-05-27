@@ -4,7 +4,7 @@
 #include "CommonLabLoadingShouldInterface.h"
 
 
-// 타겟 오브젝트에 IPrimaryLoadingShouldInterface 인터페이스를 상속 받았다면 , 검사합니다.
+// 타겟 오브젝트에 ICommonLabLoadingShouldInterface 인터페이스를 상속 받았다면 , 검사합니다.
 bool ICommonLabLoadingShouldInterface::ShouldShowLoadingScreen(UObject* TestObject)
 {
 	if(TestObject != nullptr)
