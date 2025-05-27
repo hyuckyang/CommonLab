@@ -120,16 +120,18 @@ void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, floa
 	ULoadingProcess* LoadProcess = NewObject<ULoadingProcess>(this);
 	if (bShouldConnectFade && bFadeAway)
 	{
-		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color, TDelegate<void()>::CreateLambda([this, LoadLevel]()
+		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color, TDelegate<bool()>::CreateLambda([this, LoadLevel]()
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), LoadLevel);
+			return true;
 		}));
 	}
 	else
 	{
-		LoadProcess->LoadStart(Duration, LoadingSubClass, Color, TDelegate<void()>::CreateLambda([this, LoadLevel]()
+		LoadProcess->LoadStart(Duration, LoadingSubClass, Color, TDelegate<bool()>::CreateLambda([this, LoadLevel]()
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), LoadLevel);
+			return true;
 		}));
 	}
 	
@@ -315,7 +317,6 @@ void UCommonLabLoadingScreenManager::HideLoadScreen()
 	//
 	// 추가 로직 
 	//
-	
 	bCurrentlyShowLoadScreen = false;
 	
 	if (Process)

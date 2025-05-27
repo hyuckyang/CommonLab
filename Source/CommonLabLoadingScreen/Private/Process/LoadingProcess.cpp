@@ -6,7 +6,7 @@
 #include "CommonLabLoadingWidgetInterface.h"
 #include "Framework/Application/IInputProcessor.h"
 
-#pragma region InputProcess , 입력값 처리
+#pragma region InputProcess , 입력값 처리 -> CommonLoadingScreen 의 FLoadingScreenInputPreProcessor 와 99% 동일 합니다.
 
 class FLoadingProcessInputPreProcess : public IInputProcessor
 {
@@ -25,6 +25,7 @@ public:
 
 	bool CanEatInput() const
 	{
+		// 에디터가 아닌 경우에만 입력을 막습니다.
 		return !GIsEditor;
 	}
 
@@ -99,16 +100,20 @@ bool ULoadingProcess::FadeTick(float DeltaTime)
 		else if (LoadProcess == Load)
 		{
 			// Next Level Func
+			// true 일 때 Complete 를 시도 합니다.
 			if (LoadCompleteDelegate.IsBound())
-				LoadCompleteDelegate.Execute();
-			
-			LoadProcess = Complete;
+			{
+				if (LoadCompleteDelegate.Execute())
+				{
+					LoadProcess = Complete;
+				}
+			}
 		}
 	}
-	return LoadProcess != ELoadProcess::Complete;
+	return LoadProcess != Complete;
 }
 
-void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>& WidgetSubClass, FLinearColor Color, const TDelegate<void()>& LoadDelegate)
+void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>& WidgetSubClass, FLinearColor Color, const TDelegate<bool()>& LoadDelegate)
 {
 	LoadProcess = Start;
 	LoadSubClass = WidgetSubClass;
@@ -117,7 +122,7 @@ void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>
 	FadeFunc(true, Transition, Color);
 }
 
-void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>& WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor, const TDelegate<void()>& LoadDelegate)
+void ULoadingProcess::LoadStart(float Transition, const TSubclassOf<UUserWidget>& WidgetSubClass, FLinearColor FadeFromColor, FLinearColor FadeToColor, const TDelegate<bool()>& LoadDelegate)
 {
 	LoadProcess = Start;
 	LoadSubClass = WidgetSubClass;
