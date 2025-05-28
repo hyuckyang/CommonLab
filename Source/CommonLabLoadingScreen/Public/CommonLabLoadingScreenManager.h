@@ -38,8 +38,8 @@ public:
 
 	// ~ Process Function
 	void OnFade(bool bFadeOut, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
-	void OnLoadLevel(FName LoadLevel, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
-	void OnLoadLevelBySubClass(FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+	void OnLoadScreen(const TDelegate<bool()>& TravelDelegate, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+	void OnLoadScreenBySubClass(const TDelegate<bool()>& TravelDelegate, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
 
 private:
 	bool HandleProcessElapsed(float Duration, FLinearColor& OutElapsedColor, float& OutElapsedTime, bool& OutShouldConnectFade);

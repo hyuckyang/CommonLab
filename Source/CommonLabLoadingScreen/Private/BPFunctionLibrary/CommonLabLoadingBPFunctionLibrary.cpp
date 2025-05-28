@@ -3,6 +3,7 @@
 #include "BPFunctionLibrary/CommonLabLoadingBPFunctionLibrary.h"
 
 #include "CommonLabLoadingScreenManager.h"
+#include "Kismet/GameplayStatics.h"
 
 void UCommonLabLoadingBPFunctionLibrary::OnFade(UObject* Object, bool bFadeOut, float Duration, FLinearColor Color)
 {
@@ -12,19 +13,42 @@ void UCommonLabLoadingBPFunctionLibrary::OnFade(UObject* Object, bool bFadeOut, 
 	}
 }
 
-void UCommonLabLoadingBPFunctionLibrary::OnLoadLevel(UObject* Object, FName LoadLevel, float Duration, FLinearColor Color)
+void UCommonLabLoadingBPFunctionLibrary::OnOpenLevel(UObject* Object, FName LoadLevel, float Duration, FLinearColor Color)
 {
 	if (UCommonLabLoadingScreenManager* LoadingScreenManager = GetLoadingScreenManager(Object))
 	{
-		LoadingScreenManager->OnLoadLevel(LoadLevel, Duration, Color);
+		LoadingScreenManager->OnLoadScreen(TDelegate<bool()>::CreateLambda([Object, LoadLevel]()
+		{
+			UGameplayStatics::OpenLevel(Object, LoadLevel);
+			return true;
+		}),
+		Duration, Color);
 	}
 }
 
-void UCommonLabLoadingBPFunctionLibrary::OnLoadLevelBySubClass(UObject* Object, FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color)
+void UCommonLabLoadingBPFunctionLibrary::OnTravel(UObject* Object, FName LoadLevel, float Duration, FLinearColor Color)
 {
 	if (UCommonLabLoadingScreenManager* LoadingScreenManager = GetLoadingScreenManager(Object))
 	{
-		LoadingScreenManager->OnLoadLevelBySubClass(LoadLevel, Duration, LoadingSubClass, Color);
+		LoadingScreenManager->OnLoadScreen(TDelegate<bool()>::CreateLambda([LoadLevel]()
+		{
+			// Travel ..
+			return true;
+		}),
+		Duration, Color);
+	}
+}
+
+void UCommonLabLoadingBPFunctionLibrary::OnTravelBySubClass(UObject* Object, FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color)
+{
+	if (UCommonLabLoadingScreenManager* LoadingScreenManager = GetLoadingScreenManager(Object))
+	{
+		LoadingScreenManager->OnLoadScreenBySubClass(TDelegate<bool()>::CreateLambda([LoadLevel]()
+		{
+			// 
+			return true;
+		}),
+			Duration, LoadingSubClass, Color);
 	}
 }
 

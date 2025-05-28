@@ -17,14 +17,17 @@ class COMMONLABLOADINGSCREEN_API UCommonLabLoadingBPFunctionLibrary : public UBl
 
 public:
 
-	UFUNCTION(BlueprintCallable, DisplayName="Fade", Category="Common Lab Loading|Loading Screen", meta=(WorldContext="Object"))
+	UFUNCTION(BlueprintCallable, DisplayName="Fade", Category="Common Lab Loading", meta=(WorldContext="Object"))
 	static void OnFade(UObject* Object, bool bFadeOut, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
 	
-	UFUNCTION(BlueprintCallable, DisplayName="Load Level", Category="Common Lab Loading|Loading Screen", meta=(WorldContext="Object"))
-	static void OnLoadLevel(UObject* Object, FName LoadLevel, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+	UFUNCTION(BlueprintCallable, DisplayName="Open Level", Category="Common Lab Loading", meta=(WorldContext="Object"))
+	static void OnOpenLevel(UObject* Object, FName LoadLevel, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
 	
-	UFUNCTION(BlueprintCallable, DisplayName="Load Level By SubClass", Category="Common Lab Loading|Loading Screen", meta=(WorldContext="Object"))
-	static void OnLoadLevelBySubClass(UObject* Object, FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+	UFUNCTION(BlueprintCallable, DisplayName="Travel", Category="Common Lab Loading", meta=(WorldContext="Object"))
+	static void OnTravel(UObject* Object, FName LoadLevel, float Duration, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
+
+	UFUNCTION(BlueprintCallable, DisplayName="Travel By SubClass", Category="Common Lab Loading", meta=(WorldContext="Object"))
+	static void OnTravelBySubClass(UObject* Object, FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color = FLinearColor(0.f,0.f,0.f,1.f));
 
 private:
 	static UCommonLabLoadingScreenManager* GetLoadingScreenManager(UObject* WorldContextObject);

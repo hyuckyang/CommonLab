@@ -94,7 +94,7 @@ void UCommonLabLoadingScreenManager::OnFade(bool bFadeOut, float Duration, FLine
 	}
 }
 
-void UCommonLabLoadingScreenManager::OnLoadLevel(FName LoadLevel, float Duration, FLinearColor Color)
+void UCommonLabLoadingScreenManager::OnLoadScreen(const TDelegate<bool()>& TravelDelegate, float Duration, FLinearColor Color)
 {
 	TSubclassOf<UUserWidget> Subclass = nullptr;
 	if (const UCommonLabLoadingScreenSetting* Setting = GetDefault<UCommonLabLoadingScreenSetting>())
@@ -102,10 +102,10 @@ void UCommonLabLoadingScreenManager::OnLoadLevel(FName LoadLevel, float Duration
 		Subclass = Setting->DefaultWidgetClass.TryLoadClass<UUserWidget>();
 	}
 
-	OnLoadLevelBySubClass(LoadLevel, Duration, Subclass, Color);
+	OnLoadScreenBySubClass(TravelDelegate, Duration, Subclass, Color);
 }
 
-void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color)
+void UCommonLabLoadingScreenManager::OnLoadScreenBySubClass(const TDelegate<bool()>& TravelDelegate, float Duration, TSubclassOf<class UUserWidget> LoadingSubClass, FLinearColor Color)
 {
 	FLinearColor ElapsedColor = FLinearColor::White;
 	float ElapsedTime = 0.f;
@@ -120,19 +120,11 @@ void UCommonLabLoadingScreenManager::OnLoadLevelBySubClass(FName LoadLevel, floa
 	ULoadingProcess* LoadProcess = NewObject<ULoadingProcess>(this);
 	if (bShouldConnectFade && bFadeAway)
 	{
-		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color, TDelegate<bool()>::CreateLambda([this, LoadLevel]()
-		{
-			UGameplayStatics::OpenLevel(GetWorld(), LoadLevel);
-			return true;
-		}));
+		LoadProcess->LoadStart(ElapsedTime, LoadingSubClass, ElapsedColor, Color, TravelDelegate);
 	}
 	else
 	{
-		LoadProcess->LoadStart(Duration, LoadingSubClass, Color, TDelegate<bool()>::CreateLambda([this, LoadLevel]()
-		{
-			UGameplayStatics::OpenLevel(GetWorld(), LoadLevel);
-			return true;
-		}));
+		LoadProcess->LoadStart(Duration, LoadingSubClass, Color, TravelDelegate);
 	}
 	
 	Process = LoadProcess;
