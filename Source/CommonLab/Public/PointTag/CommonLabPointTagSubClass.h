@@ -19,7 +19,7 @@ class UCommonLabPointTagWidget;
  * Tag 로 찾아낸 위젯에 특정 기능을 실행합니다.
  * 위젯의 특정 기능은 CommonLabDelegate 를 이용합니다. ( 이름 과 타입으로 설정 )
  */
-UCLASS(Abstract, Blueprintable)
+UCLASS()
 class COMMONLAB_API UCommonLabPointTagSubClass : public UObject, public ICommonLabSubClassInterface
 {
 	GENERATED_BODY()

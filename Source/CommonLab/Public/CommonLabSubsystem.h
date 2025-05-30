@@ -10,6 +10,15 @@
 
 class ICommonLabSubClassInterface;
 
+USTRUCT()
+struct FLocalPlayerSubClass
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<TScriptInterface<ICommonLabSubClassInterface>> CLabSubClasses;
+};
+
 /**
  * 
  */
@@ -35,11 +44,8 @@ public:
 #pragma region SubClass
 
 protected:
-	struct FLocalPlayerSubClass
-	{
-		TArray<TWeakInterfacePtr<ICommonLabSubClassInterface>> CLabSubClasses;
-	};
-	
+
+	UPROPERTY()
 	TMap<TWeakObjectPtr<UCommonLabLocalPlayer>, FLocalPlayerSubClass> CLabPlayerSubClasses;
 
 	virtual void CreateSubClass(ULocalPlayer* LocalPlayer);
@@ -95,7 +101,7 @@ public:
 		FLocalPlayerSubClass& LocalPlayerSubClass = CLabPlayerSubClasses[CLabLocalPlayer];
 		for (const auto& SubClass : LocalPlayerSubClass.CLabSubClasses)
 		{
-			if (SubClass.IsValid())
+			if (SubClass)
 			{
 				UObject* SubClassObject = SubClass.GetObject();
 				if (SubClassObject && SubClassObject->IsA(SubClassInterface::StaticClass()))

@@ -4,6 +4,7 @@
 #include "CommonLabSubClassInterface.h"
 #include "Delegate/CommonLabDelegateSubClass.h"
 #include "Activatable/CommonLabActivatableSubClass.h"
+#include "PointTag/CommonLabPointTagSubClass.h"
 
 void UCommonLabSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -24,9 +25,9 @@ void UCommonLabSubsystem::Deinitialize()
 			// LocalPlayerSubClass.CLabSubClasses 순회하며 Destroyed 호출
 			for (auto& SubClass : LocalPlayerSubClass.CLabSubClasses)
 			{
-				if (SubClass.IsValid())
+				if (SubClass)
 				{
-					if (ICommonLabSubClassInterface* SubClassInterface = SubClass.Get())
+					if (ICommonLabSubClassInterface* SubClassInterface = SubClass.GetInterface())
 					{
 						SubClassInterface->Destroyed();
 					}
@@ -129,6 +130,7 @@ void UCommonLabSubsystem::CreateSubClass(ULocalPlayer* LocalPlayer)
 {
 	CreateSubClass<UCommonLabDelegateSubClass>(LocalPlayer);
 	CreateSubClass<UCommonLabActivatableSubClass>(LocalPlayer);
+	CreateSubClass<UCommonLabPointTagSubClass>(LocalPlayer);
 }
 
 void UCommonLabSubsystem::ForeachSubClass(ULocalPlayer* LocalPlayer, TFunction<void(ICommonLabSubClassInterface*)> Func)
@@ -141,7 +143,7 @@ void UCommonLabSubsystem::ForeachSubClass(ULocalPlayer* LocalPlayer, TFunction<v
 	{
 		for (const auto& SubClass : CLabPlayerSubClasses[CLabLocalPlayer].CLabSubClasses)
 		{
-			if (ICommonLabSubClassInterface* SubClassInterface = SubClass.Get())
+			if (ICommonLabSubClassInterface* SubClassInterface = Cast<ICommonLabSubClassInterface>(SubClass.GetObject()))
 			{
 				Func(SubClassInterface);
 			}

@@ -20,4 +20,5 @@ void UCommonLabPointTagSubClass::Released()
 
 void UCommonLabPointTagSubClass::Destroyed()
 {
+	Released();
 }

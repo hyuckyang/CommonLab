@@ -7,7 +7,7 @@
 #include "CommonLabSubClassInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE()
+UINTERFACE(MinimalAPI)
 class UCommonLabSubClassInterface : public UInterface
 {
 	GENERATED_BODY()

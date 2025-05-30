@@ -106,15 +106,15 @@ void UCommonLabActivatableSubClass::RemoveRootFromViewport()
 	{
 		// Cache 위젯이 존재한다면 Remove 합니다.
 		Root->RemoveFromParent();
-	}	
+	}
+
+	RootOverlay = nullptr;
+	Root = nullptr;
 }
 
 void UCommonLabActivatableSubClass::DestroyRootFromViewport()
 {
 	RemoveRootFromViewport();
-	
-	RootOverlay = nullptr;
-	Root = nullptr;
 }
 
 UCommonLabActivatableStackable* UCommonLabActivatableSubClass::AddStackable(FGameplayTag Tag)
